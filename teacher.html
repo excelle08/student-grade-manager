@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>学生成绩管理系统teacher</title>
+    <script src="/static/js/jquery-3.0.0.min.js"></script>
+	<script src="/static/js/vue.min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/trumbowyg.min.css">
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/components.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid" id="header-nav">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">学生成绩管理系统</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a v-on:click="logout()">退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li role="presentation" class="active"><a href="#grades" aria-controls="grades" role="tab" data-toggle="tab">成绩管理</a></li>
+                    <li role="presentation"><a href="#customer" aria-controls="customer" role="tab" data-toggle="tab">我的评价</a></li>
+                    <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab">我的信息</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div class="row placeholders tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="grades">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="grades-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="grades-category-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#grades-panel" href="#grades-category-set-body" aria-expanded="true" aria-controls="grades-category-set-body">成绩管理</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="grades-category-set-body" role="tabpanel" aria-labelledby="grades-category-manage-window">
+                                        <div class="panel-body" id="class-list">
+                                            <nav class="navbar navbar-default">
+                                                <div class="container-fluid">
+                                                    <div class="navbar-collapse collapse">
+
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                            <p></p>
+
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <caption>班级列表</caption>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>班级编号</th>
+                                                            <th>操作</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for class in classes">
+                                                            <td>{{class.id}}</td>
+                                                            <td>{{class.number}}</td>
+                                                            <td>
+                                                                <a href="#" v-on:click="setGrade(class)"><span class="glyphicon glyphicon-pencil"></span> 学生成绩</a>&nbsp;|&nbsp; 
+                                                                <a href="#" v-on:click="displayStat(class)"><span class="glyphicon glyphicon-stats"></span> 成绩统计</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-md-2"></div>
+
+                            <div class="modal fade" id="grades-detail">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">Modal box example</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button v-if="grades.status == 0" type="button" class="btn btn-primary" v-on:click="reservation(grades)">预订</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="modal fade" id="modal-set-grades">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">学生成绩</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <nav class="navbar navbar-default" role="navigation">
+                                                        <div class="container-fluid">
+                                                            <form class="navbar-form navbar-left" role="search">
+                                                                <div class="form-group">
+                                                                    <input type="text" v-model="student_id" value="" placeholder="输入学号查找...">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <p class="navbar-text">
+                                                                        当前课程号: {{current_class.id}}, 学生人数: {{current_class.student_count}}
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </nav>
+                                                </div>
+                                                <div class="row">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#ID</th>
+                                                                <th>学号</th>
+                                                                <th>姓名</th>
+                                                                <th>性别</th>
+                                                                <th>专业</th>
+                                                                <th>平时成绩</th>
+                                                                <th>期中成绩</th>
+                                                                <th>期末成绩</th>
+                                                                <th>总评</th>
+                                                                <th>绩点</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="for record in students">
+                                                                <td>{{record.$index}}</td>
+                                                                <td>{{record.stu_id}}</td>
+                                                                <td>{{record.name}}</td>
+                                                                <td>{{record.gender}}</td>
+                                                                <td>{{record.major}}</td>
+                                                                <td>
+                                                                    <input type="text" v-bind:id="'stu-regular-score-' + record.stu_id" value="" v-bind:placeholder="record.regular">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" v-bind:id="'stu-midterm-score-' + record.stu_id" value="" v-bind:placeholder="record.midterm">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" v-bind:id="'stu-final-score-' + record.stu_id" value="" v-bind:placeholder="record.final">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" v-bind:id="'stu-total-score-' + record.stu_id" value="" v-bind:placeholder="record.total">
+                                                                </td>
+                                                                <td>{{record.grade}}</td>
+                                                                <td><a href="#" v-on:click="editStuGrade(record)"><span class="glyphicon glyphicon-pencil"></span> 修改</a></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="file" id="student-grade-file" value="" placeholder="">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-primary" v-on:click="import()">导入成绩</button>
+                                            <button type="button" class="btn btn-primary" v-on:click="export()">导出</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="modal-visualize-grades">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">成绩数据统计 - 班号: {{ current_class.id }}, 课程名称: {{current_class.name}}, 人数: {{current_class.student_count}}</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <!-- Add visualization code here -->
+                                                    <div id="grade-graph"></div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="customer">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="customer-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="customer-category-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#customer-panel" href="#customer-category-set-body" aria-expanded="true" aria-controls="customer-category-set-body">我的评价</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="customer-category-set-body" role="tabpanel" aria-labelledby="customer-category-manage-window">
+                                        <div class="panel-body">
+
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <caption>班级列表</caption>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>班级编号</th>
+                                                            <th>操作</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for class in classes">
+                                                            <td>{{class.id}}</td>
+                                                            <td>{{class.number}}</td>
+                                                            <td>
+                                                                <a href="#" v-on:click="displayRatingStat(class)"><span class="glyphicon glyphicon-pencil"></span> 查看评价统计</a>&nbsp;|&nbsp; 
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="modal-visualize-ratings">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">评价统计 - 班号: {{ current_class.id }}, 课程名称: {{current_class.name}}, 人数: {{current_class.student_count}}</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <!-- Add visualization code here -->
+                                                    <div id="grade-graph"></div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div role="tabpanel" class="tab-pane" id="info">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="info-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="info-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#info-panel" href="#info-set-body" aria-controls="info-set-body" aria-expanded="true">我的信息</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="info-set-body" role="tabpanel" aria-labelledby="info-manage-window">
+                                        <div class="panel-body">
+                                            <form class="form form-horizontal">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">姓名</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="name" readonly="1">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">教职工号</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="teacher_id" readonly="1">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">职称</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="level" readonly="1">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">办公室地址</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="address">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">电话</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="telephone">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">邮箱</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="email">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">个人简介</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea v-model="intro" cols="10" class="form-control"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-sm-10 col-sm-offset-2">
+                                                        <button type="button" class="btn btn-primary" v-on:click="updateTeacherInfo()">提交修改</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

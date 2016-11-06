@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>学生成绩管理系统</title>
+    <script src="/static/js/jquery-3.0.0.min.js"></script>
+    <script src="/static/js/vue.min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/trumbowyg.min.css">
+    <link rel="stylesheet" href="/static/css.star-rating.min.css">
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/star-rating.min.js"></script>
+    <script src="/static/js/components.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid" id="header-nav">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">学生成绩管理系统</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a v-on:click="logout()">退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li role="presentation" class="active"><a href="#grades" aria-controls="grades" role="tab" data-toggle="tab">我的成绩</a></li>
+                    <li role="presentation"><a href="#ratings" aria-controls="ratings" role="tab" data-toggle="tab">我的评教</a></li>
+                    <li role="presentation"><a href="#group" aria-controls="group" role="tab" data-toggle="tab">我的课表</a></li>
+                    <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab">我的信息</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div class="row" id="student-basic">
+                    <nav class="navbar navbar-default">
+                        <div class="container-fluid">
+                            <div class="collapse navbar-collapse">
+
+                                <p class="navbar-text">姓名: {{name}}</p>
+                                <p class="navbar-text">学号: {{student_id}}</p>
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">当前学期: {{semester}}</a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li v-for="for term in semesters">
+                                                <a href="#" v-on:click="selectSemester(term)">{{term}}</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                    <p></p>
+                </div>
+                <div class="row placeholders tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="grades">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="grades-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="grades-category-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#grades-panel" href="#grades-category-set-body" aria-expanded="true" aria-controls="grades-category-set-body">我的成绩</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="grades-category-set-body" role="tabpanel" aria-labelledby="grades-category-manage-window">
+                                        <div class="panel-body" id="class-list">
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <caption>成绩列表</caption>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>课程号</th>
+                                                            <th>课程名称</th>
+                                                            <th>教师名称</th>
+                                                            <th>总评</th>
+                                                            <th>绩点</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for grade in grades">
+                                                            <td>{{grade.class_id}}</td>
+                                                            <td>{{grade.class_name}}</td>
+                                                            <td>{{grade.teacher_name}}</td>
+                                                            <td>{{grade.final_grade}}</td>
+                                                            <td>{{grade.point}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-md-2"></div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="ratings">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="ratings-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="ratings-category-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#ratings-panel" href="#ratings-category-set-body" aria-expanded="true" aria-controls="ratings-category-set-body">我的评教</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="ratings-category-set-body" role="tabpanel" aria-labelledby="ratings-category-manage-window">
+                                        <div class="panel-body">
+
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <caption>课程列表</caption>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>课程编号</th>
+                                                            <th>课程名称</th>
+                                                            <th>教师名称</th>
+                                                            <th>评分</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for course in courses">
+                                                            <td>{{course.class_number}}</td>
+                                                            <td>{{course.class_name}}</td>
+                                                            <td>{{course.teacher_name}}</td>
+                                                            <td>
+                                                                <form>
+                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="1"> 1&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="2"> 2&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="3"> 3&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="4"> 4&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="5"> 5&nbsp;
+                                                                </form>
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" v-on:click="submitRating(course)"><span class="glyphicon glyphicon-pencil"></span> 提交评价</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div role="tabpanel" class="tab-pane" id="group">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="group-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="groups-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#group-panel" href="#groups-set-body" aria-controls="groups-set-body" aria-expanded="true">我的课表</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="groups-set-body" role="tabpanel" aria-labelledby="groups-manage-window">
+                                        <div class="panel-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <caption>课程表</caption>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>时间</th>
+                                                            <th>Mon</th>
+                                                            <th>Tue</th>
+                                                            <th>Wed</th>
+                                                            <th>Thur</th>
+                                                            <th>Fri</th>
+                                                            <th>Sat</th>
+                                                            <th>Sun</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for line in coursesGr">
+                                                            <td>{{line.$index + 1}}</td>
+                                                            <td v-for="for col in line">
+                                                                {{col.course_id}}<br>
+                                                                {{col.course_name}} - {{col.teacher}}<br>
+                                                                {{col.course_time}}<br>
+                                                                {{col.course_place}}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="info">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="info-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="info-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#info-panel" href="#info-set-body" aria-controls="info-set-body" aria-expanded="true">我的信息</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="info-set-body" role="tabpanel" aria-labelledby="info-manage-window">
+                                        <div class="panel-body">
+                                            <form class="form form-horizontal">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">姓名</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="name" readonly="1">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">学号</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="student_id" readonly="1">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">专业</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="major" readonly="1">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">性别</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="text" class="form-control" v-model="gender" readonly="1">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

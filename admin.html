@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>学生成绩管理系统</title>
+    <script src="/static/js/jquery-3.0.0.min.js"></script>
+    <script src="/static/js/vue.min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/trumbowyg.min.css">
+    <link rel="stylesheet" href="/static/css.star-rating.min.css">
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/star-rating.min.js"></script>
+    <script src="/static/js/components.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid" id="header-nav">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">学生成绩管理系统</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a v-on:click="logout()">退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li role="presentation" class="active"><a href="#students" aria-controls="students" role="tab" data-toggle="tab">学生管理</a></li>
+                    <li role="presentation"><a href="#teachers" aria-controls="teachers" role="tab" data-toggle="tab">教师管理</a></li>
+                    <li role="presentation"><a href="#courses" aria-controls="courses" role="tab" data-toggle="tab">课程管理</a></li>
+                    <li role="presentation"><a href="#group" aria-controls="group" role="tab" data-toggle="tab">选课管理</a></li>
+                    <li role="presentation"><a href="#grades" aria-controls="grades" role="tab" data-toggle="tab">成绩管理</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div class="row placeholders tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="students">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="students-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="students-category-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#students-panel" href="#students-category-set-body" aria-expanded="true" aria-controls="students-category-set-body">学生管理</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="students-category-set-body" role="tabpanel" aria-labelledby="students-category-manage-window">
+                                        <div class="panel-body" id="class-list">
+
+                                            <nav class="navbar navbar-default">
+                                                <div class="container-fluid">
+                                                    <div class="collapse navbar-collapse">
+                                                        <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
+                                                            <div class="form-group">
+                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
+                                                            </div>
+                                                            <div class="form-group">
+                                                            &nbsp;&nbsp;
+                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
+                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按姓名
+                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按学号
+                                                            </div>
+                                                        </form>
+                                                        
+                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right" v-on:click="showEditStuInfo">添加学生</button>
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                            <p></p>
+                                            
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <caption>学生列表</caption>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>学号</th>
+                                                            <th>姓名</th>
+                                                            <th>性别</th>
+                                                            <th>专业</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for student in students">
+                                                            <td>{{student.student_id}}</td>
+                                                            <td>{{student.name}}</td>
+                                                            <td>{{student.gender}}</td>
+                                                            <td>{{student.major}}</td>
+                                                            <td>
+                                                                <a href="#" v-on:click="showEditStuInfo(student)">修改信息</a>&nbsp;|&nbsp;
+                                                                <a href="#" v-on:click="showRemove(student)">删除</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-md-2"></div>
+
+                            <div class="modal fade" id="edit-students">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">学生信息</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <form class="form form-horizontal" accept-charset="utf-8">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">姓名</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_name" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">学号</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_stu_id" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">性别</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="radio" class="form-control" v-model="current_gender" value="1">男&nbsp;
+                                                                <input type="radio" class="form-control" v-model="current_gender" value="0">女
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">密码(不修改留空)</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_new_password" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">专业</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_major" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-primary" v-on:click="updateStuInfo()">提交</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="teachers">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="teachers-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="teachers-category-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#teachers-panel" href="#teachers-category-set-body" aria-expanded="true" aria-controls="teachers-category-set-body">教师管理</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="teachers-category-set-body" role="tabpanel" aria-labelledby="teachers-category-manage-window">
+                                        <div class="panel-body">
+                                            <nav class="navbar navbar-default">
+                                                <div class="container-fluid">
+                                                    <div class="collapse navbar-collapse">
+                                                        <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
+                                                            <div class="form-group">
+                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
+                                                            </div>
+                                                            <div class="form-group">
+                                                            &nbsp;&nbsp;
+                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
+                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按姓名
+                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按工号
+                                                            </div>
+                                                        </form>
+                                                        
+                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right">添加教师</button>
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                            <p></p>
+                                            
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>工号</th>
+                                                            <th>姓名</th>
+                                                            <th>职称</th>
+                                                            <th>办公室</th>
+                                                            <th>电话</th>
+                                                            <th>邮箱</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for teacher in teachers">
+                                                            <td>{{teacher.teacher_id}}</td>
+                                                            <td>{{teacher.name}}</td>
+                                                            <td>{{teacher.level}}</td>
+                                                            <td>{{teacher.address}}</td>
+                                                            <td>{{teacher.telephone}}</td>
+                                                            <td>{{teacher.email}}</td>
+                                                            <td>
+                                                                <a href="#" v-on:click="showEditTeacherInfo(student)">修改信息</a>&nbsp;|&nbsp;
+                                                                <a href="#" v-on:click="showRemove(student)">删除</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="edit-teachers">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">教师信息</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <form class="form form-horizontal" accept-charset="utf-8">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">姓名</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_name" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">工号</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_id" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">职称</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_level" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">密码(不修改留空)</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_new_password" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">办公室地址</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_address" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">电话</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_tel" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">邮箱</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_email" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">个人简介</label>
+                                                            <div class="col-sm-10">
+                                                                <textarea class="form-control" v-model="current_intro" cols="5"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-primary" v-on:click="updateTeacherInfo()">提交</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="courses">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="courses-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="courses-category-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#courses-panel" href="#courses-category-set-body" aria-expanded="true" aria-controls="courses-category-set-body">课程管理</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="courses-category-set-body" role="tabpanel" aria-labelledby="courses-category-manage-window">
+                                        <div class="panel-body">
+                                            <nav class="navbar navbar-default">
+                                                <div class="container-fluid">
+                                                    <div class="collapse navbar-collapse">
+                                                        <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
+                                                            <div class="form-group">
+                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
+                                                            </div>
+                                                            <div class="form-group">
+                                                            &nbsp;&nbsp;
+                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
+                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按名称
+                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按课程号
+                                                                <input type="radio" v-model="criteria" value="teacher" placeholder=""> 按教师
+                                                            </div>
+                                                        </form>
+                                                        
+                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right">添加课程</button>
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                            <p></p>
+                                            
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>课程编号</th>
+                                                            <th>课程名称</th>
+                                                            <th>教师</th>
+                                                            <th>地点</th>
+                                                            <th>时间</th>
+                                                            <th>学分</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for course in courses">
+                                                            <td>{{course.id}}</td>
+                                                            <td>{{course.name}}</td>
+                                                            <td>{{course.teacher_name}}</td>
+                                                            <td>{{course.place}}</td>
+                                                            <td>{{course.time}}</td>
+                                                            <td>{{course.credit}}</td>
+                                                            <td>
+                                                                <a href="#" v-on:click="showEditStuInfo(student)">修改信息</a>&nbsp;|&nbsp;
+                                                                <a href="#" v-on:click="showRemove(student)">删除</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="edit-teachers">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">课程信息</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <form class="form form-horizontal" accept-charset="utf-8">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">课程编号</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_id" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">课程名称</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_name" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">教师</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_teacher_name" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">地点</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_place" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">上课时间</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="number" class="form-control" v-model="current_start_week" placeholder="">-
+                                                                <input type="number" class="form-control" v-model="current_end_week" placeholder="">周，第
+                                                                <input type="number" class="form-control" v-model="current_start_time">-
+                                                                <input type="number" class="form-control" v-model="current_end_time">节课
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">学分</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_credit" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-primary" v-on:click="updateCourseInfo()">提交</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div role="tabpanel" class="tab-pane" id="group">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="group-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="groups-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#group-panel" href="#groups-set-body" aria-controls="groups-set-body" aria-expanded="true">选课管理</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="groups-set-body" role="tabpanel" aria-labelledby="groups-manage-window">
+                                        <div class="panel-body">
+                                             <nav class="navbar navbar-default">
+                                                <div class="container-fluid">
+                                                    <div class="collapse navbar-collapse">
+                                                        <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
+                                                            <div class="form-group">
+                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
+                                                            </div>
+                                                            <div class="form-group">
+                                                            &nbsp;&nbsp;
+                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
+                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按学生姓名
+                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按学号
+                                                            </div>
+                                                        </form>
+                                                        
+                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right">添加选课</button>
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                            <p></p>
+                                            
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>姓名</th>
+                                                            <th>学号</th>
+                                                            <th>教师姓名</th>
+                                                            <th>课程编号</th>
+                                                            <th>课程名称</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for select in selections">
+                                                            <td>{{select.student_name}}</td>
+                                                            <td>{{select.student_id}}</td>
+                                                            <td>{{select.teacher_name}}</td>
+                                                            <td>{{select.course_id}}</td>
+                                                            <td>{{select.course_name}}</td>
+                                                            <td>
+                                                                <a href="#" v-on:click="showEdit(select)">编辑/查看详细</a>&nbsp;|&nbsp;
+                                                                <a href="#" v-on:click="showRemove(select)">删除</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="edit-selection">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">选课信息</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <form class="form form-horizontal" accept-charset="utf-8">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">学生学号</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_stu_id" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">学生姓名</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_stu_name" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">课程号</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_course_id" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">课程名称</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_course_name" readonly="1" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">上课地点</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="number" class="form-control" v-model="current_place" readonly="1" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">教师名称</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_teacher" readonly="1" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">上课时间</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_time" readonly="1" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">学分</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_credit" readonly="1" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-primary" v-on:click="updateSelection()">提交</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="grades">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                                <div class="panel-group" id="grades-panel" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="grades-manage-window">
+                                            <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#grades-panel" href="#grades-set-body" aria-controls="grades-set-body" aria-expanded="true">成绩管理</a></h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-collapse collapse" id="grades-set-body" role="tabpanel" aria-labelledby="grades-manage-window">
+                                        <div class="panel-body">
+                                             <nav class="navbar navbar-default">
+                                                <div class="container-fluid">
+                                                    <div class="collapse navbar-collapse">
+                                                        <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
+                                                            <div class="form-group">
+                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
+                                                            </div>
+                                                            <div class="form-group">
+                                                            &nbsp;&nbsp;
+                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
+                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按学生姓名
+                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按学号
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                            <p></p>
+                                            
+                                            <div class="class-table">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>姓名</th>
+                                                            <th>学号</th>
+                                                            <th>教师姓名</th>
+                                                            <th>课程名称</th>
+                                                            <th>平时成绩</th>
+                                                            <th>期中成绩</th>
+                                                            <th>期末成绩</th>
+                                                            <th>总评</th>
+                                                            <th>绩点</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="for grade in grades">
+                                                            <td>{{grade.student_name}}</td>
+                                                            <td>{{grade.student_id}}</td>
+                                                            <td>{{grade.teacher_name}}</td>
+                                                            <td>{{grade.course_name}}</td>
+                                                            <td>{{grade.regular}}</td>
+                                                            <td>{{grade.midterm}}</td>
+                                                            <td>{{grade.final}}</td>
+                                                            <td>{{grade.total}}</td>
+                                                            <td>{{grade.point}}</td>
+                                                            <td>
+                                                                <a href="#" v-on:click="showEdit(select)">编辑</a>&nbsp;|&nbsp;
+                                                                <a href="#" v-on:click="showRemove(select)">删除</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <nav>
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a href="#" aria-label="Previous" v-on:click="previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a href="#">{{page}}</a></li>
+                                                    <li>
+                                                        <a href="#" aria-label="Next" v-on:click="next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="edit-grading">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                                            <h4 class="modal-title">成绩信息</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <form class="form form-horizontal" accept-charset="utf-8">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">学生学号</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_stu_id" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">学生姓名</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_stu_name" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">课程号</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_course_id" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">课程名称</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_course_name" readonly="1" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">教师名称</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_teacher_name" readonly="1" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">学分</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_credit" readonly="1" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">平时成绩</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_regular" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">期中</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_midterm" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">期末</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_final" placeholder="">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">总评</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="current_total" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-primary" v-on:click="updateStuGrade()">提交</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
