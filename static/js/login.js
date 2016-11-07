@@ -1,13 +1,6 @@
 $(document).ready(loginView);
 
 function loginView() {
-    // Redirect to home if already logged in
-    getApi('/api/user', {}, function (err, r) {
-        if(r.uid) {
-            return location.assign('/');
-        }
-    });
-
     var vm = new Vue({
         el: "#login-form",
         data: {
@@ -17,12 +10,6 @@ function loginView() {
         },
         methods: {
             login: function () {
-                var loginUrl = {
-                    student: '/api/student',
-                    teacher: '/api/teacher',
-                    admin: '/api/admin'
-                }
-
                 if (this.username == '') {
                     return showError('Please enter username');
                 }
@@ -30,17 +17,17 @@ function loginView() {
                     return showError('Please enter password');
                 }
 
-                postApi(loginUrl[this.type], {
-                    username: this.username,
-                    password: this.password,
-                    remember: this.remember
-                }, function (err, r) {
-                    if (err) {
-                        return showError(err.message);
-                    } else {
-                        return location.assign('/');
-                    }
-                });
+                createCookie('username', this.username);
+                createCookie('password', this.password);
+                createCookie('type', this.type);
+
+                var result = auth();
+                if (!result) {
+                    return showError('用户名或密码错误');
+                } else {
+                    return location.assign(result + '.html');
+                }
+
             }
         }
     })
