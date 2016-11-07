@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/dashboard.css">
     <link rel="stylesheet" href="/static/css/trumbowyg.min.css">
-    <link rel="stylesheet" href="/static/css.star-rating.min.css">
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/star-rating.min.js"></script>
-    <script src="/static/js/components.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/students.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -99,7 +99,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for grade in grades">
+                                                        <tr v-for="grade in grades">
                                                             <td>{{grade.class_id}}</td>
                                                             <td>{{grade.class_name}}</td>
                                                             <td>{{grade.teacher_name}}</td>
@@ -157,17 +157,17 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for course in courses">
-                                                            <td>{{course.class_number}}</td>
+                                                        <tr v-for="course in courses">
+                                                            <td>{{course.class_id}}</td>
                                                             <td>{{course.class_name}}</td>
                                                             <td>{{course.teacher_name}}</td>
                                                             <td>
                                                                 <form>
-                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="1"> 1&nbsp;
-                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="2"> 2&nbsp;
-                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="3"> 3&nbsp;
-                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="4"> 4&nbsp;
-                                                                    <input type="radio" v-bind:name="'rating-' + course.id" v-model="course.rating" value="5"> 5&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.class_id" v-model="course.rating" value="1"> 1&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.class_id" v-model="course.rating" value="2"> 2&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.class_id" v-model="course.rating" value="3"> 3&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.class_id" v-model="course.rating" value="4"> 4&nbsp;
+                                                                    <input type="radio" v-bind:name="'rating-' + course.class_id" v-model="course.rating" value="5"> 5&nbsp;
                                                                 </form>
                                                             </td>
                                                             <td>
@@ -227,13 +227,13 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for line in coursesGr">
-                                                            <td>{{line.$index + 1}}</td>
-                                                            <td v-for="for col in line">
+                                                        <tr v-for="line in courses">
+                                                            <td>{{$index * 2 + 1}}-{{$index * 2 + 2}}</td>
+                                                            <td v-for="col in line">
                                                                 {{col.course_id}}<br>
                                                                 {{col.course_name}} - {{col.teacher}}<br>
-                                                                {{col.course_time}}<br>
-                                                                {{col.course_place}}
+                                                                {{col.start_time}}-{{col.end_time}}<br>
+                                                                {{col.place}}
                                                             </td>
                                                         </tr>
                                                     </tbody>

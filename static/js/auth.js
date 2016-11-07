@@ -4,7 +4,7 @@
 
 function auth() {
     var username = getCookie('username');
-    var password = getCached('password');
+    var password = getCookie('password');
     var userType = getCookie('type');
     
     if (!username || !password || !userType) {

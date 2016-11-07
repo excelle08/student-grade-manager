@@ -1,44 +1,73 @@
 
 $(document).ready(loadStudentView);
 
+var stu_info = {
+    id: '2014060101011',
+    name: '杨宏春',
+    gender: 1,
+    major: '物理专业',
+    semester: 2016,
+    semesters: [2014, 2015, 2016, 2017]
+};
+
+var grades = [
+    {
+        class_id: '23',
+        class_name: '大学物理',
+        teacher_name: 'TAC',
+        final_grade: 120,
+        point: 4.0
+    },
+    {
+        class_id: '25',
+        class_name: 'C++',
+        teacher_name: 'ABC',
+        final_grade: 10,
+        point: 4.0
+    }
+];
+
+var ratings = [
+    {
+        class_id: '23',
+        class_name: '大学物理',
+        teacher_name: 'TAC',
+        rating: 5
+    },
+    {
+        class_id: '25',
+        class_name: 'C++',
+        teacher_name: 'ABC',
+        rating: 4
+    }
+];
+
+var classes = [
+    {
+        course_id: '23',
+        course_name: '大学物理',
+        teacher: 'TAC',
+        day: 1,
+        start_time: 5,
+        end_time: 6,
+        place: '挖掘机楼B307'
+    },
+    {
+        course_id: '25',
+        course_name: 'C++',
+        teacher: 'ABC',
+        day: 3,
+        start_time: 3,
+        end_time: 4,
+        place: 'A405'
+    }
+];
+
 function loadStudentView() {
-    params = getArgs();
-    getApi('/api/student', {}, function (err, student_info) {
-        if (err) {
-            alert('加载学生信息出错');
-        } else {
-            getApi('/api/student/grades', {
-                student: student_info.id
-            }, function (err, grades) {
-                if(err) {
-                    alert('Error loading student\'s grades');
-                } else {
-                    getApi('/api/student/comments', {
-                        student: student_info.id,
-                        semester: params.semester
-                    }, function (err, ratings) {
-                        if (err) {
-                            alert('Error loading rating info.'); 
-                        } else {
-                            getApi('/api/student/courses', {
-                                student: student_info.id,
-                                semester: params.semester
-                            }, function (err, courses) {
-                                if (err) {
-                                    alert('Error loading courses');
-                                } else {
-                                    navBar(student_info);
-                                    viewGrades(grades);
-                                    rateCourses(ratings);
-                                    viewClassTable(courses);
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    });
+    navBar(stu_info);
+    viewGrades(grades);
+    rateCourses(ratings);
+    viewClassTable(classes);
 }
 
 function navBar(student) {
@@ -102,17 +131,8 @@ function rateCourses(ratings) {
                 /* body... */
             },
             submitRating: function (course) {
-                var value = $('input[name="rating-' + course.id + '"]:checked').val();
-                postApi('/api/course/rating', {
-                    id: course.id,
-                    rating: value
-                }, function (err, r) {
-                    if (err) {
-                        alert('Error rating: ' + err.message);
-                    } else {
-                        alert('评价成功！')
-                    }
-                })
+                var value = $('input[name="rating-' + course.class_id + '"]:checked').val();
+                course.rating = value;
             }
         }
     })
@@ -121,23 +141,23 @@ function rateCourses(ratings) {
 function viewClassTable (courses) {
     // Preprocess
 
-    var table = [];
+    var ctable = [];
     for(var i=0; i<5; i++) {
         var row = [];
         for(var j=0; j<7; j++) {
             row.push('');
         }
-        table.push(row);
+        ctable.push(row);
     }
 
     for(var i in courses) {
-        table[courses[i].start_time][courses[i].day] = courses;
+        ctable[courses[i].start_time - 1][courses[i].day - 1] = courses[i];
     }
 
     var vm = new Vue({
-        el: '#group',
+        el: '#group-panel',
         data: {
-            courses: table
+            courses: ctable
         },
         methods: {
 
