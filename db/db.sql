@@ -2,7 +2,7 @@
 -- port : '3306'
 -- user : 'root'
 -- password : 'password'
-
+DROP DATABASE IF EXISTS grade_manager;
 CREATE DATABASE grade_manager;
 USE grade_manager;
 
@@ -44,7 +44,7 @@ credit float NOT NULL
 );
 
 CREATE TABLE selection(
-id INT NOT NULL AUTO_INCREMENT,
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 student INT NOT NULL,
 course INT NOT NULL,
 term INT NOT NULL,
@@ -53,6 +53,5 @@ mid_term float DEFAULT 0,
 final float DEFAULT 0,
 total float DEFAULT 0,
 GPA float DEFAULT 0,
-rating float DEFAULT 0,
-PRIMARY KEY(student,course,term)
+rating float DEFAULT 0
 );

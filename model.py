@@ -1,14 +1,12 @@
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from api import Base
-from routers import app
 
 db = SQLAlchemy()
-db.init_app(app)
 
 
 class Admin(db.Model, Base):
     __tablename__ = 'admin'
-    uid = db.Column('uid', db.Integer, primary_key=True, auto_increment=True)
+    uid = db.Column('uid', db.Integer, primary_key=True, autoincrement=True)
     username = db.Column('username', db.String(30), nullable=False)
     password = db.Column('password', db.String(32), nullable=False)
 
@@ -49,7 +47,7 @@ class Course(db.Model, Base):
 
 class Selection(db.Model, Base):
     __tablename__ = 'selection'
-    id = db.Column('id', db.Integer, nullable=False, auto_increment=True)
+    id = db.Column('id', db.Integer, nullable=False, autoincrement=True, primary_key=True)
     student = db.Column('student', db.Integer, nullable=False)
     course = db.Column('course', db.Integer, nullable=False)
     term = db.Column('term', db.Integer, nullable=False)
