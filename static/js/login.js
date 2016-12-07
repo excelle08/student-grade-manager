@@ -21,7 +21,7 @@ function loginView() {
                     student: '/api/student',
                     teacher: '/api/teacher',
                     admin: '/api/admin'
-                }
+                };
 
                 if (this.username == '') {
                     return showError('Please enter username');

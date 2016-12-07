@@ -1,3 +1,4 @@
+-- noinspection SqlNoDataSourceInspectionForFile
 -- port : '3306'
 -- user : 'root'
 -- password : 'password'
@@ -45,7 +46,7 @@ credit float NOT NULL
 CREATE TABLE selection(
 id INT NOT NULL AUTO_INCREMENT,
 student INT NOT NULL,
-course NOT NULL,
+course INT NOT NULL,
 term INT NOT NULL,
 regular float DEFAULT 0,
 mid_term float DEFAULT 0,

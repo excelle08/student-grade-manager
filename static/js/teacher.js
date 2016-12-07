@@ -60,13 +60,13 @@ function gradeView (classes) {
             next: function () {
                 this.page = this.page + 1;
             },
-            setGrade: function (class) {
+            setGrade: function (_class) {
                 $('#modal-set-grade').modal('show');
                 getApi('/api/grades', {
 
                 })
             },
-            displayStat: function (class) {
+            displayStat: function (_class) {
                 $('#modal-visualize-grade').modal('show');
             },
             editStuGrade: function (student) {
@@ -120,11 +120,11 @@ function ratingView (classes) {
             next: function () {
                 this.page = this.page + 1;
             },
-            displayRatingStat: function (class) {
+            displayRatingStat: function (_class) {
                 $('#modal-visualize-ratings').modal('show');
             }
         }
-    })
+    });
 }
 
 function infoView (teacher) {
