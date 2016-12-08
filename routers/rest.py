@@ -23,3 +23,4 @@ def get_current_user():
 def user_logout():
     logout()
     return {'status': 1}
+
