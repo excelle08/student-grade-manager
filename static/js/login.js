@@ -13,16 +13,10 @@ function loginView() {
         data: {
             username: '',
             password: '',
-            type: 'student'
+            role: 'student'
         },
         methods: {
             login: function () {
-                var loginUrl = {
-                    student: '/api/student',
-                    teacher: '/api/teacher',
-                    admin: '/api/admin'
-                };
-
                 if (this.username == '') {
                     return showError('Please enter username');
                 }
@@ -30,10 +24,10 @@ function loginView() {
                     return showError('Please enter password');
                 }
 
-                postApi(loginUrl[this.type], {
+                postApi('/api/user', {
                     username: this.username,
                     password: this.password,
-                    remember: this.remember
+                    role: this.role
                 }, function (err, r) {
                     if (err) {
                         return showError(err.message);
