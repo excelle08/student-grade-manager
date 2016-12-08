@@ -15,7 +15,7 @@ def user_login():
 
 
 @get('/api/user')
-def current_user():
+def get_current_user():
     return current_user()
 
 
