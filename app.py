@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from routers import *
+from routers.rest import *
 
 from config import configs
 import sys, os
