@@ -11,16 +11,16 @@ def user_login():
     role = request.form['role']
 
     user = login(username, password, role)
-    return user
+    return return_json(user)
 
 
 @get('/api/user')
 def get_current_user():
-    return current_user()
+    return return_json(current_user())
 
 
 @delete('/api/user')
 def user_logout():
     logout()
-    return {'status': 1}
+    return return_json({'status': 1})
 
