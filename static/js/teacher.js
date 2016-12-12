@@ -37,7 +37,14 @@ function gradeView (classes, my) {
             current_class: {},
             regular_ratio: '',
             midterm_ratio: '',
-            final_ratio: ''
+            final_ratio: '',
+            data: {
+                five: 0,
+                four: 0,
+                three: 0,
+                two: 0,
+                one: 0
+            }
         },
         computed: {
             page: {
@@ -96,7 +103,7 @@ function gradeView (classes, my) {
             },
             displayStat: function (_class) {
                 $('#modal-visualize-grades').modal('show');
-                var svg = dimple.newSvg('#grade-graph', 400, 400);
+
 
             },
             editStuGrade: function (record) {
@@ -140,7 +147,7 @@ function gradeView (classes, my) {
 
             }
         }
-    }) 
+    });
 }
 
 function ratingView (classes) {
@@ -149,7 +156,14 @@ function ratingView (classes) {
         data: {
             classes: classes,
             my_page: 1,
-            ratings: {}
+            ratings: {},
+            data: {
+                five: 0,
+                four: 0,
+                three: 0,
+                two: 0,
+                one: 0
+            }
         },
         computed: {
             page: {
@@ -187,8 +201,9 @@ function ratingView (classes) {
             },
             displayRatingStat: function (_class) {
                 $('#modal-visualize-ratings').modal('show');
-                ratingChart();
+
             }
+
         }
     });
 }
