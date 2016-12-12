@@ -1,7 +1,8 @@
 # -*- coding: utf8 -*-
 
-from model import db, Student, Course
+from model import db, Student, Course, Teacher
 from api import get_arg, APIError
+from sqlalchemy import or_
 from flask import session
 
 
@@ -10,7 +11,7 @@ def add_course(fields):
         raise APIError('Insufficient permission', status_code=403)
 
     course = Course()
-    for key, value in fields:
+    for key, value in fields.items():
         course.__setattr__(key, value)
 
     db.session.add(course)
@@ -36,7 +37,7 @@ def query_course_by_id(id):
 
 def list_teacher_courses(teacher_id):
     courses = Course.query.filter(Course.teacher == int(teacher_id)).all()
-    return [course for course in courses]
+    return [course.dict for course in courses]
 
 
 def list_course(search):
@@ -44,12 +45,20 @@ def list_course(search):
     limit = int(get_arg(search, 'limit', 20))
     keyword = get_arg(search, 'keyword', '')
 
-    courses = Course.query.filter(Course.name.like('%%%s%%' % keyword))\
+    courses = Course.query.filter(or_(
+                        Course.name.like('%%%s%%' % keyword),
+                        Course.cid.like('%%%s%%' % keyword))
+                    )\
                     .offset(limit * (page - 1))\
                     .limit(limit)\
                     .all()
 
-    return [course.dict for course in courses]
+    result = [course.dict for course in courses]
+    for item in result:
+        teacher = Teacher.query.filter(Teacher.id == item['teacher']).first()
+        item['teacher_name'] = teacher.name
+
+    return result
 
 
 def update_course(id, fields):
@@ -60,7 +69,7 @@ def update_course(id, fields):
     if not course:
         raise APIError('未找到指定的课程', status_code=404)
 
-    for key, value in fields:
+    for key, value in fields.items():
         course.__setattr__(key, value)
 
     db.session.commit()

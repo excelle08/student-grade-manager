@@ -3,13 +3,13 @@
 from model import Student, Teacher, Course, Selection
 from model import db
 from api import get_arg, APIError
-from api.user import query_user_by_id
+from api.user import query_user_by_numid
 from api.course import query_course_by_id
 from sqlalchemy import or_
 
 
 def create_selection(student_id, course_id):
-    student = query_user_by_id('student', student_id)
+    student = query_user_by_numid('student', student_id)
     course = query_course_by_id(course_id)
 
     if not course:
@@ -24,6 +24,18 @@ def create_selection(student_id, course_id):
     db.session.commit()
 
     return sel.dict
+
+
+def update_selection(id, student, course):
+    sel = Selection.query.filter(Selection.id == int(id)).first()
+    if not sel:
+        raise APIError('未找到指定的选课信息', status_code=404)
+
+    sel.student = int(student)
+    sel.course = int(course)
+
+    db.session.commit()
+    return sel
 
 
 def remove_selection(id):
@@ -48,7 +60,21 @@ def list_selections_of_course(search):
                         .limit(limit)\
                         .all()
 
-    return [sel.dict for sel in selections]
+    result =  [sel.dict for sel in selections]
+
+    for item in result:
+        student = Student.query.filter(Student.id == item['student']).first()
+        course = Course.query.filter(Course.id == item['course']).first()
+        teacher = Teacher.query.filter(Teacher.id == course.teacher).first()
+
+        item['student_name'] = student.name
+        item['student_sid'] = student.sid
+        item['major'] = student.major
+        item['teacher_name'] = teacher.name
+        item['course_cid'] = course.cid
+        item['course_name'] = course.name
+
+    return result
 
 
 def list_selection_of_student(search):
@@ -62,7 +88,21 @@ def list_selection_of_student(search):
                         .limit(limit)\
                         .all()
 
-    return [sel.dict for sel in selections]
+    result = [sel.dict for sel in selections]
+
+    for item in result:
+        student = Student.query.filter(Student.id == item['student']).first()
+        course = Course.query.filter(Course.id == item['course']).first()
+        teacher = Teacher.query.filter(Teacher.id == course.teacher).first()
+
+        item['student_name'] = student.name
+        item['student_sid'] = student.sid
+        item['major'] = student.major
+        item['teacher_name'] = teacher.name
+        item['course_cid'] = course.cid
+        item['course_name'] = course.name
+
+    return result
 
 
 def list_selections(search):
@@ -76,7 +116,7 @@ def list_selections(search):
                         .all()
 
     if keyword == '':
-        return [sel.dict for sel in selections]
+        result = [sel.dict for sel in selections]
     else:
         result = []
         for sel in selections:
@@ -94,7 +134,19 @@ def list_selections(search):
             ).first()
             if course or student:
                 result.append(sel.dict)
-        return result
+
+    for item in result:
+        student = Student.query.filter(Student.id == item['student']).first()
+        course = Course.query.filter(Course.id == item['course']).first()
+        teacher = Teacher.query.filter(Teacher.id == course.teacher).first()
+
+        item['student_name'] = student.name
+        item['student_sid'] = student.sid
+        item['teacher_name'] = teacher.name
+        item['course_cid'] = course.cid
+        item['course_name'] = course.name
+
+    return result
 
 
 def query_selection(selection_id):
@@ -110,7 +162,10 @@ def get_student_courses(student_id):
     courses = []
     for sel in selections:
         course = Course.query.filter(Course.id == sel['course']).first()
-        courses.append(course.dict)
+        teacher = Teacher.query.filter(Teacher.id == course.teacher).first()
+        d = course.dict
+        d['teacher_name'] = teacher.name
+        courses.append(d)
     return courses
 
 
@@ -123,10 +178,9 @@ def compute_gpa(score):
         return 4.0
 
 
-def write_grade(course_id, student_id, regular, midterm, final, total):
+def write_grade(record_id, regular, midterm, final, total):
     sel = Selection.query.filter(
-        Selection.course == int(course_id),
-        Selection.student == int(student_id)
+        Selection.id == record_id
     ).first()
 
     if not sel:
@@ -165,17 +219,17 @@ def get_student_grades(student_id):
     selections = list_selection_of_student({"sid": int(student_id), "limit": 10000})
 
     for sel in selections:
-        course = Course.query.filter(Course.id == sel.course).first()
+        course = Course.query.filter(Course.id == sel['course']).first()
         if not course:
             continue
 
         result.append({
-            'id': sel.id,
+            'id': sel['id'],
             'course_id': course.cid,
             'name': course.name,
             'teacher': course.teacher,
-            'score': sel.total,
-            'GPA': sel.GPA
+            'score': sel['total'],
+            'GPA': sel['GPA']
         })
     return result
 

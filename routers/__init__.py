@@ -21,7 +21,7 @@ def serve_html(path):
 
 
 def get(url):
-    return app.route(url, methods=['GET', 'POST'])
+    return app.route(url, methods=['GET'])
 
 
 def post(url):

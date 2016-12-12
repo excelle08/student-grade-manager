@@ -13,6 +13,8 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/components.js" type="text/javascript" charset="utf-8"></script>
     <script src="/static/js/request.js"></script>
+    <script src="/static/js/d3.v4.min.js"></script>
+    <script src="/static/js/dimple.v2.2.0.min.js"></script>
     <script src="/static/js/teacher.js"></script>
     <script>
         function logout() {
@@ -73,7 +75,7 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#grades-panel" href="#grades-category-set-body" aria-expanded="true" aria-controls="grades-category-set-body">成绩管理</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="grades-category-set-body" role="tabpanel" aria-labelledby="grades-category-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="grades-category-set-body" role="tabpanel" aria-labelledby="grades-category-manage-window">
                                         <div class="panel-body" id="class-list">
                                             <nav class="navbar navbar-default">
                                                 <div class="container-fluid">
@@ -86,20 +88,23 @@
 
                                             <div class="class-table">
                                                 <table class="table table-striped">
-                                                    <caption>班级列表</caption>
                                                     <thead>
                                                         <tr>
-                                                            <th>ID</th>
-                                                            <th>班级编号</th>
+                                                            <th>课程编号</th>
+                                                            <th>课程名称</th>
+                                                            <th>课程地点</th>
+                                                            <th>课程时间</th>
                                                             <th>操作</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for class in classes">
-                                                            <td>{{class.id}}</td>
-                                                            <td>{{class.number}}</td>
+                                                        <tr v-for="class in classes">
+                                                            <td>{{class.cid}}</td>
+                                                            <td>{{class.name}}</td>
+                                                            <td>{{class.place}}</td>
+                                                            <td>{{getTime(class)}}</td>
                                                             <td>
-                                                                <a href="#" v-on:click="setGrade(class)"><span class="glyphicon glyphicon-pencil"></span> 学生成绩</a>&nbsp;|&nbsp; 
+                                                                <a href="#" v-on:click="showSetGrade(class)"><span class="glyphicon glyphicon-pencil"></span> 学生成绩</a>&nbsp;|&nbsp;
                                                                 <a href="#" v-on:click="displayStat(class)"><span class="glyphicon glyphicon-stats"></span> 成绩统计</a>
                                                             </td>
                                                         </tr>
@@ -166,12 +171,18 @@
                                                         <div class="container-fluid">
                                                             <form class="navbar-form navbar-left" role="search">
                                                                 <div class="form-group">
-                                                                    <input type="text" v-model="student_id" value="" placeholder="输入学号查找...">
+                                                                    <p class="navbar-text">
+                                                                        分数比例:
+                                                                    </p>
                                                                 </div>
                                                                 <div class="form-group">
-                                                                    <p class="navbar-text">
-                                                                        当前课程号: {{current_class.id}}, 学生人数: {{current_class.student_count}}
-                                                                    </p>
+                                                                    <input type="number" class="form-control" min="0" max="100" v-model="regular_ratio" value="" placeholder="平时比例">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <input type="number" class="form-control" min="0" max="100" v-model="midterm_ratio" value="" placeholder="期中比例">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <input type="number" class="form-control" min="0" max="100" v-model="final_ratio" value="" placeholder="期末比例">
                                                                 </div>
                                                             </form>
                                                         </div>
@@ -184,7 +195,6 @@
                                                                 <th>#ID</th>
                                                                 <th>学号</th>
                                                                 <th>姓名</th>
-                                                                <th>性别</th>
                                                                 <th>专业</th>
                                                                 <th>平时成绩</th>
                                                                 <th>期中成绩</th>
@@ -195,25 +205,24 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr v-for="for record in students">
-                                                                <td>{{record.$index}}</td>
-                                                                <td>{{record.stu_id}}</td>
-                                                                <td>{{record.name}}</td>
-                                                                <td>{{record.gender}}</td>
+                                                            <tr v-for="record in students">
+                                                                <td>{{record.id}}</td>
+                                                                <td>{{record.student_sid}}</td>
+                                                                <td>{{record.student_name}}</td>
                                                                 <td>{{record.major}}</td>
                                                                 <td>
-                                                                    <input type="text" v-bind:id="'stu-regular-score-' + record.stu_id" value="" v-bind:placeholder="record.regular">
+                                                                    <input class="col-sm-1 form-control" type="text" v-bind:id="'stu-regular-score-' + record.id" value="" v-bind:placeholder="record.regular">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" v-bind:id="'stu-midterm-score-' + record.stu_id" value="" v-bind:placeholder="record.midterm">
+                                                                    <input class="col-sm-1 form-control" type="text" v-bind:id="'stu-midterm-score-' + record.id" value="" v-bind:placeholder="record.mid_term">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" v-bind:id="'stu-final-score-' + record.stu_id" value="" v-bind:placeholder="record.final">
+                                                                    <input class="col-sm-1 form-control" type="text"  v-bind:id="'stu-final-score-' + record.id" value="" v-bind:placeholder="record.final">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" v-bind:id="'stu-total-score-' + record.stu_id" value="" v-bind:placeholder="record.total">
+                                                                    <input class="col-sm-1 form-control" type="text"  v-bind:id="'stu-total-score-' + record.id" value="" v-bind:placeholder="record.total" readonly>
                                                                 </td>
-                                                                <td>{{record.grade}}</td>
+                                                                <td><span v-bind:id="'stu-gpa-' + record.id">{{record.GPA}}</span></td>
                                                                 <td><a href="#" v-on:click="editStuGrade(record)"><span class="glyphicon glyphicon-pencil"></span> 修改</a></td>
                                                             </tr>
                                                         </tbody>
@@ -222,10 +231,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <input type="file" id="student-grade-file" value="" placeholder="">
                                             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                                            <button type="button" class="btn btn-primary" v-on:click="import()">导入成绩</button>
-                                            <button type="button" class="btn btn-primary" v-on:click="export()">导出</button>
                                         </div>
                                     </div>
                                 </div>
@@ -236,13 +242,13 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
-                                            <h4 class="modal-title">成绩数据统计 - 班号: {{ current_class.id }}, 课程名称: {{current_class.name}}, 人数: {{current_class.student_count}}</h4>
+                                            <h4 class="modal-title">成绩数据统计 - 课程名称: {{current_class.name}}</h4>
                                         </div>
                                         <div class="modal-body">
                                             <div class="container-fluid">
                                                 <div class="row">
                                                     <!-- Add visualization code here -->
-                                                    <div id="grade-graph"></div>
+                                                    <div id="grade-graph" style="height: 400px;"></div>
                                                 </div>
                                             </div>
 
@@ -264,7 +270,7 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#customer-panel" href="#customer-category-set-body" aria-expanded="true" aria-controls="customer-category-set-body">我的评价</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="customer-category-set-body" role="tabpanel" aria-labelledby="customer-category-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="customer-category-set-body" role="tabpanel" aria-labelledby="customer-category-manage-window">
                                         <div class="panel-body">
 
                                             <div class="class-table">
@@ -272,15 +278,19 @@
                                                     <caption>班级列表</caption>
                                                     <thead>
                                                         <tr>
-                                                            <th>ID</th>
-                                                            <th>班级编号</th>
+                                                            <th>课程编号</th>
+                                                            <th>课程名称</th>
+                                                            <th>课程地点</th>
+                                                            <th>课程时间</th>
                                                             <th>操作</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for class in classes">
-                                                            <td>{{class.id}}</td>
-                                                            <td>{{class.number}}</td>
+                                                        <tr v-for="class in classes">
+                                                            <td>{{class.cid}}</td>
+                                                            <td>{{class.name}}</td>
+                                                            <td>{{class.place}}</td>
+                                                            <td>{{getTime(class)}}</td>
                                                             <td>
                                                                 <a href="#" v-on:click="displayRatingStat(class)"><span class="glyphicon glyphicon-pencil"></span> 查看评价统计</a>&nbsp;|&nbsp; 
                                                             </td>
@@ -314,13 +324,13 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
-                                            <h4 class="modal-title">评价统计 - 班号: {{ current_class.id }}, 课程名称: {{current_class.name}}, 人数: {{current_class.student_count}}</h4>
+                                            <h4 class="modal-title">评价统计 - 课程名称: {{current_class.name}}</h4>
                                         </div>
                                         <div class="modal-body">
                                             <div class="container-fluid">
                                                 <div class="row">
                                                     <!-- Add visualization code here -->
-                                                    <div id="grade-graph"></div>
+                                                    <div id="rating-graph" style="height: 400px;"></div>
                                                 </div>
                                             </div>
 
@@ -343,7 +353,7 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#info-panel" href="#info-set-body" aria-controls="info-set-body" aria-expanded="true">我的信息</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="info-set-body" role="tabpanel" aria-labelledby="info-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="info-set-body" role="tabpanel" aria-labelledby="info-manage-window">
                                         <div class="panel-body">
                                             <form class="form form-horizontal">
                                                 <div class="form-group">
@@ -385,7 +395,19 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">个人简介</label>
                                                     <div class="col-sm-10">
-                                                        <textarea v-model="intro" cols="10" class="form-control"></textarea>
+                                                        <textarea v-model="intro" rows="5" class="form-control"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">密码(更新信息必填)</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="password" v-model="password" class="form-control"></input>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">新密码(不修改则留空)</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="password" v-model="new_password" class="form-control"></input>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">

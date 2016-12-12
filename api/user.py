@@ -4,6 +4,7 @@ from model import Student, Teacher, Admin
 from model import db
 from api import APIError, get_arg
 from flask import session
+from sqlalchemy import or_
 import hashlib
 
 
@@ -123,38 +124,55 @@ def admin_add_user(role, fields):
     return user.dict
 
 
-def query_user_by_id(role, identifier):
+def query_user_by_id(role, identifier, dict=True):
     if role.lower() == 'student':
-        user = Student.query.filter(Student.sid == identifier).first()
+        user = Student.query.filter(Student.sid == (identifier)).first()
     elif role.lower() == 'teacher':
-        user = Teacher.query.filter(Teacher.tid == identifier).first()
+        user = Teacher.query.filter(Teacher.tid == (identifier)).first()
     elif role.lower() == 'admin':
-        user = Admin.query.filter(Admin.username == identifier).first()
+        user = Admin.query.filter(Admin.username == (identifier)).first()
     else:
         raise APIError('Invalid role')
 
     if not user:
         raise APIError('用户不存在', status_code=404)
 
-    return user
+    return user.dict if dict else user
+
+
+def query_user_by_numid(role, id, dict=True):
+    if role.lower() == 'student':
+        user = Student.query.filter(Student.id == int(id)).first()
+    elif role.lower() == 'teacher':
+        user = Teacher.query.filter(Teacher.id == int(id)).first()
+    elif role.lower() == 'admin':
+        user = Admin.query.filter(Admin.id == int(id)).first()
+    else:
+        raise APIError('Invalid role')
+
+    if not user:
+        raise APIError('用户不存在', status_code=404)
+
+    return user.dict if dict else user
 
 
 def admin_edit_user(role, identifier, fields):
-    user = query_user_by_id(role, identifier)
+    user = query_user_by_id(role, identifier, False)
 
-    if 'password' in fields:
+    if 'password' in fields and fields['password'].strip() != '':
         fields['password'] = hash_password(fields['password'])
-    for key, value in fields.items():
+    for key, value in fields.iteritems():
+        print 'key=%s, val=%s' % (key, value)
         if not value:
             continue
         user.__setattr__(key, value)
 
     db.session.commit()
-    return user
+    return user.dict
 
 
 def update_user(role, identifier, old_password, fields):
-    user = query_user_by_cred(role, identifier, old_password)
+    user = query_user_by_cred(role, identifier, hash_password(old_password))
     if not user:
         raise APIError('原密码错误,不能修改用户信息!')
 
@@ -162,7 +180,7 @@ def update_user(role, identifier, old_password, fields):
 
 
 def admin_delete_user(role, identifier):
-    user = query_user_by_id(role, identifier)
+    user = query_user_by_id(role, identifier, False)
 
     db.session.delete(user)
     db.session.commit()
@@ -175,9 +193,9 @@ def list_user(role, search):
     id_keyword = get_arg(search, 'keyword', '')
 
     if role == 'student':
-        query = Student.query.filter(Student.sid.like('%%%s%%' % id_keyword))
+        query = Student.query.filter(or_(Student.sid.like('%%%s%%' % id_keyword), Student.name.like('%%%s%%' % id_keyword)))
     elif role == 'teacher':
-        query = Teacher.query.filter(Teacher.tid.like('%%%s%%' % id_keyword))
+        query = Teacher.query.filter(or_(Teacher.tid.like('%%%s%%' % id_keyword), Teacher.name.like('%%%s%%' % id_keyword)))
     elif role == 'admin':
         query = Admin.query.filter(Admin.username.like('%%%s%%' % id_keyword))
     else:

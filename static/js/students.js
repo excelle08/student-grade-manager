@@ -3,7 +3,7 @@ $(document).ready(loadStudentView);
 
 function loadStudentView() {
     params = getArgs();
-    getApi('/api/user/student', {}, function (err, student_info) {
+    getApi('/api/user', {}, function (err, student_info) {
         if (err) {
             alert('加载学生信息出错');
         } else {
@@ -46,9 +46,6 @@ function navBar(student) {
             semesters: student.semesters
         },
         methods: {
-            selectSemester: function (term) {
-                return location.assign(window.location.pathname + '?semester=' + term)
-            }
         }
     });
 
@@ -56,9 +53,39 @@ function navBar(student) {
         el: '#info',
         data: {
             name: student.name,
-            student_id: student.id,
+            id: student.id,
+            student_id: student.sid,
             major: student.major,
-            gender: (student.gender == 1) ? '男' : '女'
+            gender: (student.gender == 1) ? '男' : '女',
+            old_password: '',
+            new_password: ''
+        },
+        methods: {
+            changePassword: function () {
+                if (!this.old_password.trim()) {
+                    return alert('请输入旧密码!');
+                }
+                if (!this.new_password.trim()) {
+                    return alert('请输入新密码!');
+                }
+                if (this.new_password.length < 6) {
+                    return alert('密码长度太短');
+                }
+
+                postApi('/api/user/student/' + this.student_id, {
+                    old_password: this.old_password,
+                    password: this.new_password
+                }, function (err, r) {
+                    if (err) {
+                        alert(err.message);
+                    } else {
+                        alert('密码修改成功,请重新登录!');
+                        deleteApi('/api/user', {}, function (err, r) {
+                            location.assign('/');
+                        });
+                    }
+                });
+            }
         }
     });
 }
@@ -68,16 +95,6 @@ function viewGrades(grades) {
         el: '#grades',
         data: {
             grades: grades,
-            page: 1
-        },
-        methods: {
-            previous: function () {
-                /* body... */
-            },
-
-            next: function () {
-                /* body... */
-            }
         }
     });
 }
@@ -98,9 +115,7 @@ function rateCourses(ratings) {
             },
             submitRating: function (course) {
                 var value = $('input[name="rating-' + course.id + '"]:checked').val();
-                postApi('/api/course/rating', {
-                    id: course.id,
-                    rating: value
+                postApi('/api/student/rate/' + course.id + '/' + value, {
                 }, function (err, r) {
                     if (err) {
                         alert('Error rating: ' + err.message);
@@ -126,7 +141,7 @@ function viewClassTable (courses) {
     }
 
     for(var i in courses) {
-        table[courses[i].start_time][courses[i].day] = courses;
+        table[courses[i].start_time - 1][courses[i].day - 1] = courses[i];
     }
 
     var vm = new Vue({

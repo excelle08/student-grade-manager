@@ -74,7 +74,7 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#students-panel" href="#students-category-set-body" aria-expanded="true" aria-controls="students-category-set-body">学生管理</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="students-category-set-body" role="tabpanel" aria-labelledby="students-category-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="students-category-set-body" role="tabpanel" aria-labelledby="students-category-manage-window">
                                         <div class="panel-body" id="class-list">
 
                                             <nav class="navbar navbar-default">
@@ -82,17 +82,11 @@
                                                     <div class="collapse navbar-collapse">
                                                         <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
                                                             <div class="form-group">
-                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
-                                                            </div>
-                                                            <div class="form-group">
-                                                            &nbsp;&nbsp;
-                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
-                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按姓名
-                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按学号
+                                                                <input type="text" v-model="query" v-on:change="refresh" class="form-control" placeholder="搜索...">
                                                             </div>
                                                         </form>
                                                         
-                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right" v-on:click="showEditStuInfo">添加学生</button>
+                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right" v-on:click="showEditStuInfo(null)">添加学生</button>
                                                     </div>
                                                 </div>
                                             </nav>
@@ -100,7 +94,6 @@
                                             
                                             <div class="class-table">
                                                 <table class="table table-striped">
-                                                    <caption>学生列表</caption>
                                                     <thead>
                                                         <tr>
                                                             <th>学号</th>
@@ -111,10 +104,10 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for student in students">
-                                                            <td>{{student.student_id}}</td>
+                                                        <tr v-for="student in students">
+                                                            <td>{{student.sid}}</td>
                                                             <td>{{student.name}}</td>
-                                                            <td>{{student.gender}}</td>
+                                                            <td>{{getGender(student.gender)}}</td>
                                                             <td>{{student.major}}</td>
                                                             <td>
                                                                 <a href="#" v-on:click="showEditStuInfo(student)">修改信息</a>&nbsp;|&nbsp;
@@ -160,33 +153,33 @@
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">姓名</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_name" placeholder="">
+                                                                <input type="text" class="form-control" v-model="name" placeholder="">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">学号</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_stu_id" placeholder="">
+                                                                <input type="text" class="form-control" v-model="sid" placeholder="">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">性别</label>
                                                             <div class="col-sm-10">
-                                                                <input type="radio" class="form-control" v-model="current_gender" value="1">男&nbsp;
-                                                                <input type="radio" class="form-control" v-model="current_gender" value="0">女
+                                                                <input type="radio" class="form-control" v-model="gender" value="1">男&nbsp;
+                                                                <input type="radio" class="form-control" v-model="gender" value="0">女
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">密码(不修改留空)</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_new_password" placeholder="">
+                                                                <input type="password" class="form-control" v-model="password" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">专业</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_major" placeholder="">
+                                                                <input type="text" class="form-control" v-model="major" placeholder="">
                                                             </div>
                                                         </div>
                                                     </form>
@@ -213,24 +206,18 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#teachers-panel" href="#teachers-category-set-body" aria-expanded="true" aria-controls="teachers-category-set-body">教师管理</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="teachers-category-set-body" role="tabpanel" aria-labelledby="teachers-category-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="teachers-category-set-body" role="tabpanel" aria-labelledby="teachers-category-manage-window">
                                         <div class="panel-body">
                                             <nav class="navbar navbar-default">
                                                 <div class="container-fluid">
                                                     <div class="collapse navbar-collapse">
                                                         <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
                                                             <div class="form-group">
-                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
-                                                            </div>
-                                                            <div class="form-group">
-                                                            &nbsp;&nbsp;
-                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
-                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按姓名
-                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按工号
+                                                                <input type="text" v-model="query"  class="form-control"  placeholder="搜索...">
                                                             </div>
                                                         </form>
                                                         
-                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right">添加教师</button>
+                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right" v-on:click="showEditTeacherInfo(null)">添加教师</button>
                                                     </div>
                                                 </div>
                                             </nav>
@@ -250,16 +237,16 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for teacher in teachers">
-                                                            <td>{{teacher.teacher_id}}</td>
+                                                        <tr v-for="teacher in teachers">
+                                                            <td>{{teacher.tid}}</td>
                                                             <td>{{teacher.name}}</td>
-                                                            <td>{{teacher.level}}</td>
+                                                            <td>{{teacher.title}}</td>
                                                             <td>{{teacher.address}}</td>
                                                             <td>{{teacher.telephone}}</td>
                                                             <td>{{teacher.email}}</td>
                                                             <td>
-                                                                <a href="#" v-on:click="showEditTeacherInfo(student)">修改信息</a>&nbsp;|&nbsp;
-                                                                <a href="#" v-on:click="showRemove(student)">删除</a>
+                                                                <a href="#" v-on:click="showEditTeacherInfo(teacher)">修改信息</a>&nbsp;|&nbsp;
+                                                                <a href="#" v-on:click="showRemove(teacher)">删除</a>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -299,53 +286,53 @@
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">姓名</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_name" placeholder="">
+                                                                <input type="text" class="form-control" v-model="name" placeholder="">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">工号</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_id" placeholder="">
+                                                                <input type="text" class="form-control" v-model="tid" placeholder="">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">职称</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_level" placeholder="">
+                                                                <input type="text" class="form-control" v-model="title" placeholder="">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">密码(不修改留空)</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_new_password" placeholder="">
+                                                                <input type="password" class="form-control" v-model="password" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">办公室地址</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_address" placeholder="">
+                                                                <input type="text" class="form-control" v-model="address" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">电话</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_tel" placeholder="">
+                                                                <input type="text" class="form-control" v-model="tel" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">邮箱</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_email" placeholder="">
+                                                                <input type="text" class="form-control" v-model="email" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">个人简介</label>
                                                             <div class="col-sm-10">
-                                                                <textarea class="form-control" v-model="current_intro" cols="5"></textarea>
+                                                                <textarea class="form-control" v-model="intro" cols="5"></textarea>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -363,7 +350,6 @@
 
                         </div>
                     </div>
-
                     <div role="tabpanel" class="tab-pane" id="courses">
                         <div class="row">
                             <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
@@ -373,25 +359,18 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#courses-panel" href="#courses-category-set-body" aria-expanded="true" aria-controls="courses-category-set-body">课程管理</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="courses-category-set-body" role="tabpanel" aria-labelledby="courses-category-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="courses-category-set-body" role="tabpanel" aria-labelledby="courses-category-manage-window">
                                         <div class="panel-body">
                                             <nav class="navbar navbar-default">
                                                 <div class="container-fluid">
                                                     <div class="collapse navbar-collapse">
                                                         <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
                                                             <div class="form-group">
-                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
-                                                            </div>
-                                                            <div class="form-group">
-                                                            &nbsp;&nbsp;
-                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
-                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按名称
-                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按课程号
-                                                                <input type="radio" v-model="criteria" value="teacher" placeholder=""> 按教师
+                                                                <input type="text" v-model="query" class="form-control" v-on:change="refresh" placeholder="搜索...">
                                                             </div>
                                                         </form>
                                                         
-                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right">添加课程</button>
+                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right" v-on:click="showEditCourseInfo(null)">添加课程</button>
                                                     </div>
                                                 </div>
                                             </nav>
@@ -411,16 +390,16 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for course in courses">
-                                                            <td>{{course.id}}</td>
+                                                        <tr v-for="course in courses">
+                                                            <td>{{course.cid}}</td>
                                                             <td>{{course.name}}</td>
                                                             <td>{{course.teacher_name}}</td>
                                                             <td>{{course.place}}</td>
-                                                            <td>{{course.time}}</td>
+                                                            <td>{{getTime(course)}}</td>
                                                             <td>{{course.credit}}</td>
                                                             <td>
-                                                                <a href="#" v-on:click="showEditStuInfo(student)">修改信息</a>&nbsp;|&nbsp;
-                                                                <a href="#" v-on:click="showRemove(student)">删除</a>
+                                                                <a href="#" v-on:click="showEditCourseInfo(course)">修改信息</a>&nbsp;|&nbsp;
+                                                                <a href="#" v-on:click="showRemove(course)">删除</a>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -446,7 +425,7 @@
                                 </div>
                             </div>
 
-                            <div class="modal fade" id="edit-teachers">
+                            <div class="modal fade" id="edit-course">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -460,42 +439,53 @@
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">课程编号</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_id" placeholder="">
+                                                                <input type="text" class="form-control" v-model="cid" placeholder="">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">课程名称</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_name" placeholder="">
+                                                                <input type="text" class="form-control" v-model="name" placeholder="">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label class="col-sm-2 control-label">教师</label>
+                                                            <label class="col-sm-2 control-label">教师查询</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_teacher_name" placeholder="">
+                                                                <input type="text" class="form-control" v-model="teacher_query" v-on:change="queryTeacher()" placeholder="姓名或工号...按TAB自动查询并输入ID">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">教师姓名</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="teacher_name" readonly>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">教师ID</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="teacher" placeholder="" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">地点</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_place" placeholder="">
+                                                                <input type="text" class="form-control" v-model="place" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">上课时间</label>
                                                             <div class="col-sm-10">
-                                                                <input type="number" class="form-control" v-model="current_start_week" placeholder="">-
-                                                                <input type="number" class="form-control" v-model="current_end_week" placeholder="">周，第
-                                                                <input type="number" class="form-control" v-model="current_start_time">-
-                                                                <input type="number" class="form-control" v-model="current_end_time">节课
+                                                                星期<input type="number" class="form-control" v-model="day" placeholder="">
+                                                                <input type="number" class="form-control" v-model="start_time">-
+                                                                <input type="number" class="form-control" v-model="end_time">节课
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">学分</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_credit" placeholder="">
+                                                                <input type="text" class="form-control" v-model="credit" placeholder="">
                                                             </div>
                                                         </div>
                                                     </form>
@@ -511,7 +501,6 @@
                             </div>
                         </div>
                     </div>
-                   
                     <div role="tabpanel" class="tab-pane" id="group">
                         <div class="row">
                             <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
@@ -521,24 +510,18 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#group-panel" href="#groups-set-body" aria-controls="groups-set-body" aria-expanded="true">选课管理</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="groups-set-body" role="tabpanel" aria-labelledby="groups-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="groups-set-body" role="tabpanel" aria-labelledby="groups-manage-window">
                                         <div class="panel-body">
                                              <nav class="navbar navbar-default">
                                                 <div class="container-fluid">
                                                     <div class="collapse navbar-collapse">
                                                         <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
                                                             <div class="form-group">
-                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
-                                                            </div>
-                                                            <div class="form-group">
-                                                            &nbsp;&nbsp;
-                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
-                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按学生姓名
-                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按学号
+                                                                <input type="text" v-model="keyword" class="form-control" v-on:click="refresh" placeholder="搜索...">
                                                             </div>
                                                         </form>
                                                         
-                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right">添加选课</button>
+                                                        <button type="button" class="btn btn-primary navbar-btn navbar-right" v-on:click="showEdit(null)">添加选课</button>
                                                     </div>
                                                 </div>
                                             </nav>
@@ -557,14 +540,14 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for select in selections">
+                                                        <tr v-for="select in selections">
                                                             <td>{{select.student_name}}</td>
-                                                            <td>{{select.student_id}}</td>
+                                                            <td>{{select.student_sid}}</td>
                                                             <td>{{select.teacher_name}}</td>
-                                                            <td>{{select.course_id}}</td>
+                                                            <td>{{select.course_cid}}</td>
                                                             <td>{{select.course_name}}</td>
                                                             <td>
-                                                                <a href="#" v-on:click="showEdit(select)">编辑/查看详细</a>&nbsp;|&nbsp;
+                                                                <a href="#" v-on:click="showEdit(select)">编辑</a>&nbsp;|&nbsp;
                                                                 <a href="#" v-on:click="showRemove(select)">删除</a>
                                                             </td>
                                                         </tr>
@@ -603,55 +586,67 @@
                                                 <div class="row">
                                                     <form class="form form-horizontal" accept-charset="utf-8">
                                                         <div class="form-group">
-                                                            <label class="col-sm-2 control-label">学生学号</label>
+                                                            <label class="col-sm-2 control-label">学生查询</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_stu_id" placeholder="">
+                                                                <input type="text" class="form-control" v-model="student_query" v-on:change="queryStudent()" placeholder="姓名/学号....按TAB查询并自动输入">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label class="col-sm-2 control-label">学生姓名</label>
+                                                            <label class="col-sm-2 control-label">学生信息</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_stu_name" placeholder="">
+                                                                <input type="text" class="form-control" v-model="student_name" placeholder="" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label class="col-sm-2 control-label">课程号</label>
+                                                            <label class="col-sm-2 control-label">学生ID</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_course_id" placeholder="">
+                                                                <input type="text" class="form-control" v-model="student" placeholder="" readonly>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">课程查询</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="course_query" v-on:change="queryCourse()" placeholder="课程名称/编号....按TAB查询并自动输入">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">课程ID</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" v-model="course" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">课程名称</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_course_name" readonly="1" placeholder="">
+                                                                <input type="text" class="form-control" v-model="course_name" readonly="1" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">上课地点</label>
                                                             <div class="col-sm-10">
-                                                                <input type="number" class="form-control" v-model="current_place" readonly="1" placeholder="">
+                                                                <input type="text" class="form-control" v-model="course_place" readonly="1" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">教师名称</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_teacher" readonly="1" placeholder="">
+                                                                <input type="text" class="form-control" v-model="course_teacher_name" readonly="1" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">上课时间</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_time" readonly="1" placeholder="">
+                                                                <input type="text" class="form-control" v-model="course_time" readonly="1" placeholder="">
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-2 control-label">学分</label>
                                                             <div class="col-sm-10">
-                                                                <input type="text" class="form-control" v-model="current_credit" readonly="1" placeholder="">
+                                                                <input type="text" class="form-control" v-model="course_credit" readonly="1" placeholder="">
                                                             </div>
                                                         </div>
                                                     </form>
@@ -678,20 +673,14 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#grades-panel" href="#grades-set-body" aria-controls="grades-set-body" aria-expanded="true">成绩管理</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="grades-set-body" role="tabpanel" aria-labelledby="grades-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="grades-set-body" role="tabpanel" aria-labelledby="grades-manage-window">
                                         <div class="panel-body">
                                              <nav class="navbar navbar-default">
                                                 <div class="container-fluid">
                                                     <div class="collapse navbar-collapse">
                                                         <form class="navbar-form navbar-left" accept-charset="utf-8" role="search">
                                                             <div class="form-group">
-                                                                <input type="text" v-model="query" class="form-control" placeholder="搜索...">
-                                                            </div>
-                                                            <div class="form-group">
-                                                            &nbsp;&nbsp;
-                                                                <label class="control-label">查询依据:&nbsp;&nbsp;</label>
-                                                                <input type="radio" v-model="criteria" value="name" placeholder=""> 按学生姓名
-                                                                <input type="radio" v-model="criteria" value="id" placeholder=""> 按学号
+                                                                <input type="text" v-model="query" class="form-control" v-on:change="refresh" placeholder="搜索...">
                                                             </div>
                                                         </form>
                                                     </div>
@@ -716,20 +705,16 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for grade in grades">
+                                                        <tr v-for="grade in grades">
                                                             <td>{{grade.student_name}}</td>
-                                                            <td>{{grade.student_id}}</td>
+                                                            <td>{{grade.student_sid}}</td>
                                                             <td>{{grade.teacher_name}}</td>
                                                             <td>{{grade.course_name}}</td>
                                                             <td>{{grade.regular}}</td>
-                                                            <td>{{grade.midterm}}</td>
+                                                            <td>{{grade.mid_term}}</td>
                                                             <td>{{grade.final}}</td>
                                                             <td>{{grade.total}}</td>
-                                                            <td>{{grade.point}}</td>
-                                                            <td>
-                                                                <a href="#" v-on:click="showEdit(select)">编辑</a>&nbsp;|&nbsp;
-                                                                <a href="#" v-on:click="showRemove(select)">删除</a>
-                                                            </td>
+                                                            <td>{{grade.GPA}}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

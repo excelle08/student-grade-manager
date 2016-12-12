@@ -39,14 +39,13 @@ def api_get_course_by_id(id):
     return return_json(query_course_by_id(id))
 
 
-@post('/api/admin/user')
-def api_admin_add_user():
+@post('/api/admin/user/<role>')
+def api_admin_add_user(role):
+    if not role in ['student', 'teacher', 'admin']:
+        raise APIError('Invalid role', status_code=404)
     args = {}
-    for key, value in request.form.items():
-        args[key] = value
-
-    role = args['role']
-    del args['role']
+    for k, v in request.form.items():
+        args[k] = v
     return return_json(admin_add_user(role, args))
 
 
@@ -62,10 +61,23 @@ def api_query_user(role, id):
     )
 
 
+@get('/api/user/<role>/id/<int:id>')
+def api_query_user_by_numid(role, id):
+    if 'role' not in session or session['role'] == 'student':
+        raise APIError('Insufficient permission', status_code=403)
+    if role not in ['student', 'teacher', 'admin']:
+        raise APIError('Invalid role', status_code=404)
+
+    return return_json(
+        query_user_by_numid(role, id)
+    )
+
+
 @post('/api/user/<role>/<id>')
 def api_update_user_info(role, id):
+    print request.data
     if 'role' in session and session['role'] == 'admin':
-        return_json(admin_edit_user(role, id, request.form))
+        return return_json(admin_edit_user(role, id, request.form))
     else:
         if not 'old_password' in request.form:
             raise APIError('请输入原密码后更新用户信息', status_code=403)
@@ -75,7 +87,7 @@ def api_update_user_info(role, id):
                 continue
             args[key] = value
 
-        return_json(update_user(role, id, request.form['old_password'], args))
+        return return_json(update_user(role, id, request.form['old_password'], args))
 
 
 @get('/api/user/<role>')
@@ -87,6 +99,7 @@ def api_list_user(role):
 
     search_credit = request.args
     return return_json(list_user(role, search_credit))
+
 
 @delete('/api/admin/user/<role>/<id>')
 def api_admin_remove_user(role, id):
@@ -107,7 +120,7 @@ def api_admin_list_course():
 
 
 @post('/api/admin/course/<id>')
-def api_admin_update_course():
+def api_admin_update_course(id):
     return return_json(update_course(id, request.form))
 
 
@@ -131,22 +144,22 @@ def api_retrieve_teacher_courses(id):
     return return_json(list_teacher_courses(id))
 
 
-@post('/api/teacher/grade/<cid>/<sid>')
-def api_teacher_grading(course_id, student_id):
+@post('/api/teacher/grade/<record_id>')
+def api_teacher_grading(record_id):
     regular = request.form['regular']
     midterm = request.form['midterm']
     final = request.form['final']
     total = request.form['total']
 
     return return_json(
-        write_grade(course_id, student_id, regular, midterm, final, total)
+        write_grade(record_id, regular, midterm, final, total)
     )
 
 
 @post('/api/admin/selection')
 def api_admin_add_selection():
-    student_id = int(request.form['student_id'])
-    course_id = int(request.form['course_id'])
+    student_id = int(request.form['student'])
+    course_id = int(request.form['course'])
     return return_json(
         create_selection(student_id, course_id)
     )
@@ -157,6 +170,15 @@ def api_admin_list_selections():
     return return_json(
         list_selections(request.args)
     )
+
+
+@post('/api/admin/selection/<int:id>')
+def api_admin_update_selection(id):
+    return return_json(update_selection(
+        id,
+        int(request.form['student']),
+        int(request.form['course'])
+    ));
 
 
 @delete('/api/admin/selection/<int:id>')

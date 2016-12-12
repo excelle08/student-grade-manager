@@ -125,7 +125,7 @@ function toDateTime(ts) {
 }
 
 function reloadArray (target, data) {
-    target.splice(0, target.length - 1);
+    target.splice(0, target.length);
     for(var i in data) {
         target.push(data[i]);
     }

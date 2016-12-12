@@ -69,16 +69,7 @@
 
                                 <p class="navbar-text">姓名: {{name}}</p>
                                 <p class="navbar-text">学号: {{student_id}}</p>
-                                <ul class="nav navbar-nav navbar-right">
-                                    <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">当前学期: {{semester}}</a>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li v-for="for term in semesters">
-                                                <a href="#" v-on:click="selectSemester(term)">{{term}}</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
+
                             </div>
                         </div>
                     </nav>
@@ -94,7 +85,7 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#grades-panel" href="#grades-category-set-body" aria-expanded="true" aria-controls="grades-category-set-body">我的成绩</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="grades-category-set-body" role="tabpanel" aria-labelledby="grades-category-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="grades-category-set-body" role="tabpanel" aria-labelledby="grades-category-manage-window">
                                         <div class="panel-body" id="class-list">
                                             <div class="class-table">
                                                 <table class="table table-striped">
@@ -109,31 +100,17 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for grade in grades">
-                                                            <td>{{grade.class_id}}</td>
-                                                            <td>{{grade.class_name}}</td>
-                                                            <td>{{grade.teacher_name}}</td>
-                                                            <td>{{grade.final_grade}}</td>
-                                                            <td>{{grade.point}}</td>
+                                                        <tr v-for="grade in grades">
+                                                            <td>{{grade.course_id}}</td>
+                                                            <td>{{grade.name}}</td>
+                                                            <td>{{grade.teacher}}</td>
+                                                            <td>{{grade.score}}</td>
+                                                            <td>{{grade.GPA}}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <nav>
-                                                <ul class="pagination">
-                                                    <li>
-                                                        <a href="#" aria-label="Previous" v-on:click="previous">
-                                                            <span aria-hidden="true">&laquo;</span>
-                                                        </a>
-                                                    </li>
-                                                    <li><a href="#">{{page}}</a></li>
-                                                    <li>
-                                                        <a href="#" aria-label="Next" v-on:click="next">
-                                                            <span aria-hidden="true">&raquo;</span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </nav>
+
                                         </div>
                                     </div>
                                 </div>
@@ -151,7 +128,7 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#ratings-panel" href="#ratings-category-set-body" aria-expanded="true" aria-controls="ratings-category-set-body">我的评教</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="ratings-category-set-body" role="tabpanel" aria-labelledby="ratings-category-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="ratings-category-set-body" role="tabpanel" aria-labelledby="ratings-category-manage-window">
                                         <div class="panel-body">
 
                                             <div class="class-table">
@@ -167,9 +144,9 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for course in courses">
-                                                            <td>{{course.class_number}}</td>
-                                                            <td>{{course.class_name}}</td>
+                                                        <tr v-for="course in courses">
+                                                            <td>{{course.course_cid}}</td>
+                                                            <td>{{course.course_name}}</td>
                                                             <td>{{course.teacher_name}}</td>
                                                             <td>
                                                                 <form>
@@ -219,14 +196,14 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#group-panel" href="#groups-set-body" aria-controls="groups-set-body" aria-expanded="true">我的课表</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="groups-set-body" role="tabpanel" aria-labelledby="groups-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="groups-set-body" role="tabpanel" aria-labelledby="groups-manage-window">
                                         <div class="panel-body">
                                             <div class="table-responsive">
                                                 <table class="table table-bordered">
                                                     <caption>课程表</caption>
                                                     <thead>
                                                         <tr>
-                                                            <th>时间</th>
+                                                            <th>节次</th>
                                                             <th>Mon</th>
                                                             <th>Tue</th>
                                                             <th>Wed</th>
@@ -237,13 +214,13 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="for line in coursesGr">
-                                                            <td>{{line.$index + 1}}</td>
-                                                            <td v-for="for col in line">
-                                                                {{col.course_id}}<br>
-                                                                {{col.course_name}} - {{col.teacher}}<br>
-                                                                {{col.course_time}}<br>
-                                                                {{col.course_place}}
+                                                        <tr v-for="line in courses">
+                                                            <td>{{$index * 2 + 1}} - {{$index * 2 + 2}}</td>
+                                                            <td v-for="col in line">
+                                                                {{col.cid}}<br>
+                                                                {{col.name}} - {{col.teacher_name}}<br>
+                                                                {{col.start_time}}-{{col.end_time}}<br>
+                                                                {{col.place}}
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -265,7 +242,7 @@
                                             <h4><a role="button" class="collapsed" data-toggle="collapse" data-parent="#info-panel" href="#info-set-body" aria-controls="info-set-body" aria-expanded="true">我的信息</a></h4>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default panel-collapse collapse" id="info-set-body" role="tabpanel" aria-labelledby="info-manage-window">
+                                    <div class="panel panel-default panel-collapse collapse in" id="info-set-body" role="tabpanel" aria-labelledby="info-manage-window">
                                         <div class="panel-body">
                                             <form class="form form-horizontal">
                                                 <div class="form-group">
@@ -291,6 +268,21 @@
                                                     <div class="col-sm-10">
                                                         <input type="text" class="form-control" v-model="gender" readonly="1">
                                                     </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">原密码(<b>修改密码需要</b>)</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="password" class="form-control" v-model="old_password">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">新密码</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="password" class="form-control" v-model="new_password">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button class="btn btn-danger" v-on:click="changePassword">修改密码</button>
                                                 </div>
                                             </form>
                                         </div>
