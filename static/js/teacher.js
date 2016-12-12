@@ -97,7 +97,6 @@ function gradeView (classes, my) {
             displayStat: function (_class) {
                 $('#modal-visualize-grades').modal('show');
                 var svg = dimple.newSvg('#grade-graph', 400, 400);
-                var 
 
             },
             editStuGrade: function (record) {

@@ -83,7 +83,7 @@ def list_selection_of_student(search):
     limit = int(get_arg(search, 'limit', 10000))
 
     selections = Selection.query\
-                        .filter(Selection.course == student_id)\
+                        .filter(Selection.student == student_id)\
                         .offset((page - 1) * limit)\
                         .limit(limit)\
                         .all()

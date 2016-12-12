@@ -41,7 +41,7 @@ function navBar(student) {
         el: '#student-basic',
         data: {
             name: student.name,
-            student_id: student.id,
+            student_id: student.sid,
             semester: student.semester,
             semesters: student.semesters
         },
