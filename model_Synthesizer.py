@@ -4,10 +4,9 @@ import re
 
 model_class = 'db.Model'
 file_name = 'db/db.sql'
-code = 'from routers import app\n\
+code = 'from flask_sqlalchemy import SQLAlchemy\n\
 \n\
 db = SQLAlchemy()\n\
-db.init_app(app)\n\
 \n\n'
 ddl = ''
 
@@ -44,7 +43,7 @@ def compose_table_class(columns):
             if re.search('PRIMARY KEY', attr, re.IGNORECASE):
                 codeline += ', primary_key=True'
             if re.search('AUTO_INCREMENT', attr, re.IGNORECASE):
-                codeline += ', auto_increment=True'
+                codeline += ', autoincrement=True'
             s = re.search('DEFAULT (\w*),?', attr, re.IGNORECASE)
             if s:
                 codeline += ', default=%s' % s.group(1)

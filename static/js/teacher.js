@@ -3,11 +3,11 @@ $(document).ready(loadTeacherView);
 function loadTeacherView () {
     var params = getArgs();
 
-    getApi('/api/teacher', {}, function (err, teacher) {
+    getApi('/api/user', {}, function (err, teacher) {
         if (err) {
             alert('Error loading teacher info. - ' + err.message);
         } else {
-            getApi('/api/teacher/class', {
+            getApi('/api/teacher/' + teacher.id + '/courses', {
                 page: params.page || 1
             }, function (err, classes) {
                 if (err) {
@@ -133,7 +133,7 @@ function infoView (teacher) {
         data: {
             name: teacher.name,
             teacher_id: teacher.id,
-            level: teacher.level,
+            title: teacher.title,
             address: teacher.address,
             telephone: teacher.telephone,
             email: teacher.email,

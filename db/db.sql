@@ -7,13 +7,14 @@ CREATE DATABASE grade_manager;
 USE grade_manager;
 
 CREATE TABLE admin(
-uid int PRIMARY KEY AUTO_INCREMENT,
+id int PRIMARY KEY AUTO_INCREMENT,
 username varchar(30) NOT NULL,
 password varchar(32) NOT NULL
 );
 
 CREATE TABLE student(
-sid INT NOT NULL PRIMARY KEY,
+id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+sid varchar(20) NOT NULL,
 name varchar(30) NOT NULL,
 gender INT NOT NULL,
 password varchar(32) NOT NULL,
@@ -21,7 +22,8 @@ major varchar(100) NOT NULL
 );
 
 CREATE TABLE teacher(
-tid INT NOT NULL PRIMARY KEY,
+id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+tid varchar(20) NOT NULL,
 name varchar(30) NOT NULL,
 gender int NOT NULL,
 password varchar(32) NOT NULL,
@@ -33,7 +35,8 @@ intro text
 );
 
 CREATE TABLE course(
-cid INT NOT NULL PRIMARY KEY,
+id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+cid varchar(20) not null,
 name varchar(30) NOT NULL,
 teacher int NOT NULL,
 place varchar(50) NOT NULL,

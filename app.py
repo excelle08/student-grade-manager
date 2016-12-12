@@ -23,7 +23,7 @@ def run_app(environ, start_response):
     app.config['SQLALCHEMY_DATABASE_URI'] = get_mysql_conn_str()
     app._static_folder = os.path.abspath('.') + '/static'
     app.config['debug'] = True
-    app.config.from_object('config.configs')
+    app.config.from_object('config')
     return app(environ, start_response)
 
 
@@ -32,5 +32,5 @@ if __name__=='__main__':
     sys.setdefaultencoding('utf-8')
     app.config['SQLALCHEMY_DATABASE_URI'] = get_mysql_conn_str()
     app._static_folder = os.path.abspath('.') + '/static'
-    app.config.from_object('config.configs')
+    app.config.from_object('config')
     app.run(debug=True, host='0.0.0.0')

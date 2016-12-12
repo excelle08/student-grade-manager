@@ -4,16 +4,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>学生成绩管理系统</title>
+    <title>学生成绩管理系统 - 学生端</title>
     <script src="/static/js/jquery-3.0.0.min.js"></script>
     <script src="/static/js/vue.min.js"></script>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/dashboard.css">
     <link rel="stylesheet" href="/static/css/trumbowyg.min.css">
-    <link rel="stylesheet" href="/static/css.star-rating.min.css">
     <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/js/star-rating.min.js"></script>
-    <script src="/static/js/components.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/request.js"></script>
+    <script src="/static/js/students.js"></script>
+    <script>
+        function logout() {
+            deleteApi('/api/user', {}, function(err, r) {
+                if (r) {
+                    location.assign('/');
+                } else {
+                    alert(err.message);
+                }
+            });
+        }
+    </script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -35,7 +45,7 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a v-on:click="logout()">退出登录</a></li>
+                    <li><a onclick="logout()">退出登录</a></li>
                 </ul>
             </div>
         </div>

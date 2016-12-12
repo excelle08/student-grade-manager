@@ -4,7 +4,7 @@ configs = {
         'port': 3306,
         'user': 'root',
         'password': '',
-        'database': 'liangshanpets'
+        'database': 'grade_manager'
     },
     'session': {
         'secret': '36a451df3681e9b3'

@@ -6,14 +6,15 @@ db = SQLAlchemy()
 
 class Admin(db.Model, Base):
     __tablename__ = 'admin'
-    uid = db.Column('uid', db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     username = db.Column('username', db.String(30), nullable=False)
     password = db.Column('password', db.String(32), nullable=False)
 
 
 class Student(db.Model, Base):
     __tablename__ = 'student'
-    sid = db.Column('sid', db.Integer, nullable=False, primary_key=True)
+    id = db.Column('id', db.Integer, nullable=False, primary_key=True, autoincrement=True)
+    sid = db.Column('sid', db.String(20), nullable=False)
     name = db.Column('name', db.String(30), nullable=False)
     gender = db.Column('gender', db.Integer, nullable=False)
     password = db.Column('password', db.String(32), nullable=False)
@@ -22,7 +23,8 @@ class Student(db.Model, Base):
 
 class Teacher(db.Model, Base):
     __tablename__ = 'teacher'
-    tid = db.Column('tid', db.Integer, nullable=False, primary_key=True)
+    id = db.Column('id', db.Integer, nullable=False, primary_key=True, autoincrement=True)
+    tid = db.Column('tid', db.String(20), nullable=False)
     name = db.Column('name', db.String(30), nullable=False)
     gender = db.Column('gender', db.Integer, nullable=False)
     password = db.Column('password', db.String(32), nullable=False)
@@ -35,7 +37,8 @@ class Teacher(db.Model, Base):
 
 class Course(db.Model, Base):
     __tablename__ = 'course'
-    cid = db.Column('cid', db.Integer, nullable=False, primary_key=True)
+    id = db.Column('id', db.Integer, nullable=False, primary_key=True, autoincrement=True)
+    cid = db.Column('cid', db.String(20), nullable=False)
     name = db.Column('name', db.String(30), nullable=False)
     teacher = db.Column('teacher', db.Integer, nullable=False)
     place = db.Column('place', db.String(50), nullable=False)
@@ -47,7 +50,7 @@ class Course(db.Model, Base):
 
 class Selection(db.Model, Base):
     __tablename__ = 'selection'
-    id = db.Column('id', db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    id = db.Column('id', db.Integer, nullable=False, primary_key=True, autoincrement=True)
     student = db.Column('student', db.Integer, nullable=False)
     course = db.Column('course', db.Integer, nullable=False)
     term = db.Column('term', db.Integer, nullable=False)
@@ -57,6 +60,3 @@ class Selection(db.Model, Base):
     total = db.Column('total', db.Float, default=0)
     GPA = db.Column('GPA', db.Float, default=0)
     rating = db.Column('rating', db.Float, default=0)
-
-
-

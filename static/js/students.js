@@ -3,26 +3,21 @@ $(document).ready(loadStudentView);
 
 function loadStudentView() {
     params = getArgs();
-    getApi('/api/student', {}, function (err, student_info) {
+    getApi('/api/user/student', {}, function (err, student_info) {
         if (err) {
             alert('加载学生信息出错');
         } else {
-            getApi('/api/student/grades', {
-                student: student_info.id
+            getApi('/api/student/' + student_info.id.toString() + '/grades', {
             }, function (err, grades) {
                 if(err) {
                     alert('Error loading student\'s grades');
                 } else {
-                    getApi('/api/student/comments', {
-                        student: student_info.id,
-                        semester: params.semester
+                    getApi('/api/selection/student/' + student_info.id.toString(), {
                     }, function (err, ratings) {
                         if (err) {
                             alert('Error loading rating info.'); 
                         } else {
-                            getApi('/api/student/courses', {
-                                student: student_info.id,
-                                semester: params.semester
+                            getApi('/api/student/' + student_info.id.toString() + '/courses', {
                             }, function (err, courses) {
                                 if (err) {
                                     alert('Error loading courses');

@@ -1,42 +1,47 @@
-$(document).ready();
+$(document).ready(loadAdminView());
 
 function loadAdminView() {
     params = getArgs();
 
-    getApi('/api/students', {
-        page: params.page || 1
+    getApi('/api/user/student', {
+        page: params.page || 1,
+        limit: 20
     }, function (err, students) {
         if (err) {
             alert('Error loading student ' + err.message); 
         } else {
             studentView(students);
 
-            getApi('/api/teachers', {
-                page: params.page || 1
+            getApi('/api/user/teacher', {
+                page: params.page || 1,
+                limit: 20
             }, function (err, teachers) {
                 if (err) {
                     alert('error loading teacher - ' + err.message);
                 } else {
                     teacherView(teachers);
 
-                    getApi('/api/courses', {
-                        page: params.page || 1
+                    getApi('/api/admin/course', {
+                        page: params.page || 1,
+                        limit: 20
                     }, function (err, courses) {
                         if (err) {
                             alert('error loading courses - ' + err.message);
                         } else {
                             courseView(courses);
 
-                            getApi('/api/selections', {
-                                page: params.page || 1
+                            getApi('/api/admin/selection', {
+                                page: params.page || 1,
+                                limit: 20
                             }, function (err, selections) {
                                 if (err) {
                                     alert('error loading selections - ' + err.message); 
                                 } else {
                                     selectionView(selections);
 
-                                    getApi('/api/grades', {
-                                        page: params.page || 1
+                                    getApi('/api/admin/selection', {
+                                        page: params.page || 1,
+                                        limit: 20
                                     }, function (err, grades) {
                                         if (err) {
                                             alert('error loading grades - ' + err.message);

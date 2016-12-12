@@ -2,7 +2,7 @@
 
 from model import Student, Teacher, Admin
 from model import db
-from api import APIError
+from api import APIError, get_arg
 from flask import session
 import hashlib
 
@@ -28,28 +28,28 @@ def extract_user_credential(userobj):
         cred['id'] = userobj.tid
         cred['username'] = userobj.tid
     elif isinstance(userobj, Admin):
-        cred['id'] = userobj.uid
+        cred['id'] = userobj.id
         cred['username'] = userobj.username
 
     return cred
 
 
-def query_user(role, username, password):
+def query_user_by_cred(role, username, password_hash):
     user_obj = None
     if role.lower() == 'student':
         user_obj = Student.query.filter(
             Student.sid == username,
-            Student.password == hash_password(password)
+            Student.password == password_hash
         ).first()
     elif role.lower() == 'teacher':
         user_obj = Teacher.query.filter(
             Teacher.tid == username,
-            Teacher.password == hash_password(password)
+            Teacher.password == password_hash
         ).first()
     elif role.lower() == 'admin':
         user_obj = Admin.query.filter(
-            Admin.name == username,
-            Admin.password == hash_password(password)
+            Admin.username == username,
+            Admin.password == password_hash
         ).first()
 
     return user_obj
@@ -59,7 +59,7 @@ def login(username, password, role):
     if username == '' or password == '' or role == '':
         raise APIError('请输入用户名,密码和登陆角色', status_code=400)
 
-    userobj = query_user(role, username, password)
+    userobj = query_user_by_cred(role, username, hash_password(password))
 
     if not userobj:
         raise APIError('请输入正确的用户名,密码与登陆角色', status_code=400)
@@ -81,10 +81,19 @@ def logout():
 
 def current_user():
     try:
-        return query_user(session['role'],
-                          session['username'],
-                          session['password']
-                          ).dict
+        print "Session: role=%s, username=%s, pwd=%s" % (
+            session['role'], session['username'], session['password']
+        )
+        user = query_user_by_cred(session['role'],
+                                  session['username'],
+                                  session['password']
+                                  )
+        if user:
+            return user.dict
+        else:
+            print 'User not found'
+            return {}
+
     except KeyError:
         return {}
 
@@ -113,3 +122,66 @@ def admin_add_user(role, fields):
     db.session.commit()
     return user.dict
 
+
+def query_user_by_id(role, identifier):
+    if role.lower() == 'student':
+        user = Student.query.filter(Student.sid == identifier).first()
+    elif role.lower() == 'teacher':
+        user = Teacher.query.filter(Teacher.tid == identifier).first()
+    elif role.lower() == 'admin':
+        user = Admin.query.filter(Admin.username == identifier).first()
+    else:
+        raise APIError('Invalid role')
+
+    if not user:
+        raise APIError('用户不存在', status_code=404)
+
+    return user
+
+
+def admin_edit_user(role, identifier, fields):
+    user = query_user_by_id(role, identifier)
+
+    if 'password' in fields:
+        fields['password'] = hash_password(fields['password'])
+    for key, value in fields.items():
+        if not value:
+            continue
+        user.__setattr__(key, value)
+
+    db.session.commit()
+    return user
+
+
+def update_user(role, identifier, old_password, fields):
+    user = query_user_by_cred(role, identifier, old_password)
+    if not user:
+        raise APIError('原密码错误,不能修改用户信息!')
+
+    return admin_edit_user(role, identifier, fields)
+
+
+def admin_delete_user(role, identifier):
+    user = query_user_by_id(role, identifier)
+
+    db.session.delete(user)
+    db.session.commit()
+    return {'impact': 1}
+
+
+def list_user(role, search):
+    page = int(get_arg(search, 'page', 1))
+    limit = int(get_arg(search, 'limit', 10))
+    id_keyword = get_arg(search, 'keyword', '')
+
+    if role == 'student':
+        query = Student.query.filter(Student.sid.like('%%%s%%' % id_keyword))
+    elif role == 'teacher':
+        query = Teacher.query.filter(Teacher.tid.like('%%%s%%' % id_keyword))
+    elif role == 'admin':
+        query = Admin.query.filter(Admin.username.like('%%%s%%' % id_keyword))
+    else:
+        raise APIError('Invalid role')
+
+    users = query.offset(limit * (page - 1)).limit(limit).all()
+    return [user.dict for user in users]

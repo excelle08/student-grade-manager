@@ -77,3 +77,12 @@ class Base():
 
 def enum(**enums):
     return type('Enum', (), enums)
+
+
+def get_arg(kwargs, key, default=None):
+    if key in kwargs:
+        return kwargs[key]
+    else:
+        if default is None:
+            raise APIError('Missing parameter: %s' % key, status_code=400)
+        return default

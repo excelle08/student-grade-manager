@@ -14,10 +14,15 @@ function _ajax(method, url, data, callback) {
         }
         return callback && callback(null, r);
     }).fail(function(jqXHR, textStatus) {
-        return callback && callback({
+        try {
+            data = JSON.parse(jqXHR.responseText);
+            return callback && callback(data);
+        } catch (ex) {
+            return callback && callback({
                 error: 'HTTP ' + jqXHR.status,
                 message: 'Network error (HTTP ' + jqXHR.status + ')'
             });
+        }
     });
 }
 
@@ -26,7 +31,7 @@ function postApi(url, data, callback) {
         callback = data;
         data = {};
     }
-    jsonApi('POST', url, data, callback);
+    _ajax('POST', url, data, callback);
 }
 
 function getApi(url, data, callback) {
@@ -44,7 +49,7 @@ function putApi(url, data, callback) {
         data = {};
     }
 
-    jsonApi('PUT', url, data, callback);
+    _ajax('PUT', url, data, callback);
 }
 
 function deleteApi(url, data, callback) {
@@ -53,7 +58,7 @@ function deleteApi(url, data, callback) {
         data = {};
     }
 
-    jsonApi('DELETE', url, data, callback);
+    _ajax('DELETE', url, data, callback);
 }
 
 function patchApi(url, data, callback) {
@@ -62,7 +67,7 @@ function patchApi(url, data, callback) {
         data = {};
     }
 
-    jsonApi('PATCH', url, data, callback);
+    _ajax('PATCH', url, data, callback);
 }
 
 function jsonApi(method, url, object, callback) {
