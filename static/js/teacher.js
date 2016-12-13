@@ -39,8 +39,8 @@ function gradeView (classes, my) {
             midterm_ratio: '',
             final_ratio: '',
             data: {
-                five: 0,
-                four: 0,
+                five: 1,
+                four: 1,
                 three: 0,
                 two: 0,
                 one: 0
@@ -102,9 +102,8 @@ function gradeView (classes, my) {
                 })
             },
             displayStat: function (_class) {
+
                 $('#modal-visualize-grades').modal('show');
-
-
             },
             editStuGrade: function (record) {
                 var regular = parseInt($('#stu-regular-score-' + record.id).val());
@@ -158,8 +157,8 @@ function ratingView (classes) {
             my_page: 1,
             ratings: {},
             data: {
-                five: 0,
-                four: 0,
+                five: 1,
+                four: 1,
                 three: 0,
                 two: 0,
                 one: 0
@@ -200,8 +199,48 @@ function ratingView (classes) {
                 this.page = this.page + 1;
             },
             displayRatingStat: function (_class) {
+                getApi('/api/selection/course/' + _class.id, {}, function (err, r) {
+                    if (r) {
+                        var data = {
+                            five: 0,
+                            four: 0,
+                            three: 0,
+                            two: 0,
+                            one: 0
+                        };
+                        for (var i in r) {
+                            if (r[i].rating > 4.0) {
+                                data.five = data.five + 1;
+                            } else if (r[i].rating > 3.0 && r[i] <= 4.0) {
+                                data.four = data.four + 1;
+                            } else if (r[i].rating > 2.0 && r[i] <= 3.0) {
+                                data.three = data.three + 1;
+                            } else if (r[i].rating > 1.0 && r[i] <= 2.0) {
+                                data.two = data.two + 1;
+                            } else  if (r[i].rating == 0) {
+                                continue;
+                            } else {
+                                data.one = data.one + 1;
+                            }
+                        }
+                        $('#rating-graph').html('<p class="lead">\
+                                                        Level 5: <code>' + data.five + '</code>\
+                                                    </p>\
+                                                    <p class="lead">\
+                                                        Level 4: <code>' + data.four + '</code>\
+                                                    </p>\
+                                                    <p class="lead">\
+                                                        Level 3: <code>' + data.three + '</code>\
+                                                    </p>\
+                                                    <p class="lead">\
+                                                        Level 2: <code>' + data.two + '</code>\
+                                                    </p>\
+                                                    <p class="lead">\
+                                                        Level 1: <code>' + data.one + '</code>\
+                                                    </p>');
+                    }
+                });
                 $('#modal-visualize-ratings').modal('show');
-
             }
 
         }
